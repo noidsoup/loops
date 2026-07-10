@@ -6,11 +6,13 @@ Shared map for phase-level `model_class` on each loop. Canonical preference orde
 
 ## Class → model table (Cursor)
 
+**Composer-fast is banned.** `composer-2.5-fast` consumes more usage in Cursor than regular `composer-2.5` and is not used by any class. If a `*-fast` variant is ever added to a future Cursor model family, treat it the same way: do not route to it.
+
 | Class | Prefer (in order) | Fallback if unavailable |
 |---|---|---|
 | `high-reasoning` | `claude-opus-4-8-thinking-high`, then `gpt-5.5-high` or `claude-sonnet-5-thinking-high` | `grok-4.5-xhigh` (Cursor Grok) |
-| `workhorse` | `composer-2.5`, then `composer-2.5-fast` | `grok-4.5-xhigh` |
-| `cheap-fast` | `composer-2.5-fast` | `grok-4.5-xhigh` |
+| `workhorse` | `grok-4.5-xhigh` (Cursor Grok) | `composer-2.5` (regular — never fast) |
+| `cheap-fast` | `grok-4.5-xhigh` (Cursor Grok) | `composer-2.5` (regular — never fast) |
 
 "Unavailable" means usage exhausted, rate-limited, quota exceeded, model not allowed, or the Task/subagent call rejects the slug.
 
@@ -21,8 +23,8 @@ When running a loop **in Cursor**, for each phase:
 1. Read that phase’s `model_class` from `loop.yaml` (or the loop’s Model selection section).
 2. Resolve the preferred slug from the table above.
 3. **`high-reasoning`:** Prefer dispatching the phase via **Task / subagent** with `model` set to the preferred high-reasoning slug when the product allows it. If Task/subagent or that slug is unavailable, use the strongest available non-Fable model in the current session and continue — do not block the loop.
-4. **`workhorse`:** Implement in the main agent, or a workhorse subagent with `model: composer-2.5` (then `composer-2.5-fast`) when available.
-5. **`cheap-fast`:** Prefer `composer-2.5-fast` for short handoffs / summaries; main agent is fine if already warm.
+4. **`workhorse`:** Implement in the main agent, or a workhorse subagent with `model: grok-4.5-xhigh` (Cursor Grok). Fallback to `composer-2.5` (regular — never `composer-2.5-fast`) if Grok is unavailable.
+5. **`cheap-fast`:** Prefer `grok-4.5-xhigh` for short handoffs / summaries; main agent is fine if already warm. Do not use `composer-2.5-fast` — it consumes more Cursor usage than regular composer.
 6. **Fallback protocol:** If the chosen model fails due to usage limits, quota, “model not available”, or similar — **immediately retry the same step** with `grok-4.5-xhigh`. Tell the user in **one short line** that you fell back to Grok due to usage. Do **not** stall asking permission.
 7. If already on Grok as fallback, **continue** — do not loop forever trying banned or unavailable models.
 8. Never select Fable.
