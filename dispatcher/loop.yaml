@@ -4,6 +4,9 @@ description: |
   Meta-loop. The entry point. Reads user intent, classifies it against the
   available loops, and dispatches to the right one. Never executes a task
   directly — only routes.
+# Classification stays on the current session model. After dispatch, the
+# chosen loop owns model_class behavior for its phases (see adapters/MODEL_CLASSES.md).
+model_class: workhorse
 triggers:
   - "use the loops"
   - "loops?"

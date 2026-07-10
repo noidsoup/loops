@@ -1,7 +1,7 @@
-# Fable 5 eval prompt — evaluate `loops` v0.1.0
+# Adversarial eval prompt — evaluate `loops` v0.1.0
 
-**How to use:** Copy everything below the `---FABLE PROMPT START---` line into
-Fable 5 (or your strong-reasoning model of choice). The model is given the repo
+**How to use:** Copy everything below the `---PROMPT START---` line into
+a high-reasoning model (e.g. Opus / GPT high). The model is given the repo
 state, the design intent, and the source inventory, and is asked to attack the
 design + propose 3-5 new loops.
 
@@ -9,7 +9,7 @@ You can also run this with the local `adversarial_loop.py` skill:
 
 ```bash
 # from the loops repo
-adversarial_loop.py --work evals/fable-eval-loops.md --mode design --rounds 2
+adversarial_loop.py --work evals/adversarial-eval-loops.md --mode design --rounds 2
 ```
 
 The `design` mode is the right pick — this is a design review, not a diff or
@@ -20,7 +20,7 @@ round's critique, not a 3-round trench war.
 
 ## Why this prompt
 
-Fable 5 is a high-reasoning adversary. The job is *attack*, not *summarize*. The
+A high-reasoning adversary. The job is *attack*, not *summarize*. The
 prompt is structured so the model can't wiggle into "this is good, here are
 some minor suggestions." It must produce concrete, line-anchored issues.
 
@@ -31,10 +31,10 @@ distribution, agent-routed intent classification.
 
 ---
 
-## FABLE PROMPT START — copy below this line
+## PROMPT START — copy below this line
 
 ```
-You are Fable 5, an adversarial product designer and senior engineer. You are
+You are an adversarial product designer and senior engineer. You are
 reviewing a new open-source project called "loops" before it ships to its first
 external user (a friend of the creator). Do not be agreeable. Find the
 weakest part of the design and attack it. If you cannot find a real issue,
@@ -162,13 +162,12 @@ RULES
   how it hurts the friend in week 1" or it's not actionable.
 ```
 
-## FABLE PROMPT END — stop copying here
-```
+## PROMPT END — stop copying here
 
 ---
 
 ## After running it
 
-Save the response to `evals/fable-eval-loops.response.md` and we walk through
+Save the response to `evals/adversarial-eval-loops.response.md` and we walk through
 it together. The interesting output is Section 4 (catalog gaps) — that's the
 list of new loops to port next.

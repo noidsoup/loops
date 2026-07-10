@@ -5,15 +5,19 @@ description: |
   fix, prove green. No speculative fixes before the failure is reproducible.
 phases:
   - name: reproduce
+    model_class: high-reasoning
     goal: Obtain a reliable minimal reproduction you observed yourself.
     exit_condition: Repro triggers the symptom consistently.
   - name: failing-test
+    model_class: workhorse
     goal: Encode the repro as an automated test that fails for the right reason.
     exit_condition: Test run is red on the bug assertion.
   - name: fix
+    model_class: workhorse
     goal: Apply the smallest root-cause fix; prove the new test green.
     exit_condition: Regression test green; related suite clean in scope.
   - name: handoff
+    model_class: cheap-fast
     goal: Report cause, test, fix, verification, follow-ups.
     exit_condition: Handoff message sent.
 triggers:

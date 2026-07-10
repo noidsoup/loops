@@ -5,7 +5,7 @@ alwaysApply: true
 
 # loops is available globally
 
-This machine has `loops` installed for **all Cursor projects**. Canonical definitions live at `~/.loops` (symlink to the loops repo). You do **not** need a per-project `.loops/` clone.
+This machine has `loops` installed for **all Cursor and Claude Code projects**. Canonical definitions live at `~/.loops` (symlink to the loops repo). You do **not** need a per-project `.loops/` clone.
 
 When the user says "use the loops" or asks for help on a task that fits a known loop, route through the dispatcher.
 
@@ -43,14 +43,42 @@ Below, `LOOPS_ROOT` means that resolved path.
 
 Personas under `LOOPS_ROOT/personas/` are review lenses for `sar` / `adversarial-gate`, not top-level loops.
 
-## Cursor discovery helpers (optional)
+## Discovery helpers (optional)
 
 Global install also links emitted files under:
 
-- `~/.cursor/rules/loops-*.mdc` — agent-requestable rules
-- `~/.cursor/skills/loops-*/` — skills (namespaced `loops-` so they do not collide with other skills)
+- **Cursor:** `~/.cursor/rules/loops-*.mdc`, `~/.cursor/skills/loops-*/`
+- **Claude Code:** `~/.claude/skills/loops-*/` (invoke `/loops-dispatcher` or say "use the loops"), plus user-level awareness at `~/.claude/rules/loops.md`
+
+Names are prefixed with `loops-` so they do not collide with other skills.
 
 Prefer reading canonical `LOOPS_ROOT/**/loop.md` when running a loop. The emitted files are discovery aids.
+
+## Model selection (Cursor — required)
+
+Phases declare a `model_class` in each loop’s `loop.yaml`. Full map: `LOOPS_ROOT/adapters/MODEL_CLASSES.md`.
+
+| Class | Prefer (in order) | Fallback if unavailable |
+|---|---|---|
+| `high-reasoning` | `claude-opus-4-8-thinking-high`, then `gpt-5.5-high` or `claude-sonnet-5-thinking-high` | `grok-4.5-xhigh` |
+| `workhorse` | `composer-2.5`, then `composer-2.5-fast` | `grok-4.5-xhigh` |
+| `cheap-fast` | `composer-2.5-fast` | `grok-4.5-xhigh` |
+
+**Banned:** any Fable / `fable-5` / `claude-fable-*` model. Never recommend or use them.
+
+When running a loop **in Cursor**:
+
+1. Read the phase’s `model_class`.
+2. **`high-reasoning`:** Dispatch via **Task/subagent** with `model` set to the preferred high-reasoning slug. Do not do heavy planning/attack/judge in a workhorse-only parent if a high model can be spawned.
+3. **`workhorse`:** Implement in the main agent or a workhorse subagent (`composer-2.5`).
+4. **`cheap-fast`:** Prefer `composer-2.5-fast` for short handoffs; main agent is fine if already warm.
+5. **Fallback:** If the chosen model fails (usage exhausted, rate-limited, quota, “model not available”) — **immediately retry the same step** with `grok-4.5-xhigh`. Tell the user in one short line you fell back to Grok due to usage. Do not ask permission. If already on Grok, continue — do not loop forever on banned/unavailable models.
+
+Dispatcher classification may stay on the current model. After dispatch, the **chosen loop** owns model-class behavior.
+
+### Claude Code (advisory)
+
+Claude often cannot switch models mid-session. Treat `model_class` as guidance: start a high-reasoning session (or a second session) when you can; otherwise continue best-effort in the current session and note once if you could not switch. Same Fable ban. No Cursor Grok slug in Claude — use the user’s best available non-Fable alternative when a preferred model is unavailable.
 
 ## What NOT to do
 
@@ -58,7 +86,7 @@ Prefer reading canonical `LOOPS_ROOT/**/loop.md` when running a loop. The emitte
 - Don't invent new loops. If nothing fits, route to `use-the-loop`.
 - Don't run loops without following the phases. Each loop's `loop.md` defines its own contract.
 - Don't treat personas as dispatcher options.
-- Don't overwrite unrelated skills in `~/.cursor/skills/` (Hermes / other packs). Loops skills are always `loops-*`.
+- Don't overwrite unrelated skills in `~/.cursor/skills/` or `~/.claude/skills/` (Hermes / other packs). Loops skills are always `loops-*`.
 
 ## Re-emitting and refreshing the global install
 
@@ -68,7 +96,9 @@ After editing canonical `loop.md` files in the loops repo:
 cd LOOPS_ROOT   # e.g. ~/.loops or the cloned repo
 git pull        # if tracking upstream
 node adapters/emit.js
-node adapters/install-global.js
+node adapters/install-global.js              # Cursor + Claude
+# node adapters/install-global.js --claude-only
+# node adapters/install-global.js --cursor-only
 ```
 
-`install-global.js` re-links skills/rules and refreshes this awareness rule.
+`install-global.js` re-links skills/rules and refreshes awareness files.

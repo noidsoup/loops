@@ -33,6 +33,20 @@ This project has `loops` installed at `.loops/` (per-project clone). Loops are p
 
 Personas under `.loops/personas/` are review lenses for `sar` / `adversarial-gate`, not top-level loops.
 
+## Model selection (Cursor — required)
+
+Phases declare `model_class` in each loop’s `loop.yaml`. Full map: `.loops/adapters/MODEL_CLASSES.md` (or `~/.loops/adapters/MODEL_CLASSES.md` on global install).
+
+| Class | Prefer (in order) | Fallback if unavailable |
+|---|---|---|
+| `high-reasoning` | `claude-opus-4-8-thinking-high`, then `gpt-5.5-high` or `claude-sonnet-5-thinking-high` | `grok-4.5-xhigh` |
+| `workhorse` | `composer-2.5`, then `composer-2.5-fast` | `grok-4.5-xhigh` |
+| `cheap-fast` | `composer-2.5-fast` | `grok-4.5-xhigh` |
+
+**Banned:** any Fable model. Never recommend or use them.
+
+In Cursor: for `high-reasoning` phases, dispatch via Task/subagent with `model` set; for `workhorse`, use main agent or `composer-2.5`. On usage/rate-limit/unavailable — immediately retry with `grok-4.5-xhigh` and tell the user in one line. Do not ask permission. Claude Code: classes are advisory (switch session if needed).
+
 ## What NOT to do
 
 - Don't read `.loops/loop.md` files just to "understand the project." Only load them when the user has triggered a loop.

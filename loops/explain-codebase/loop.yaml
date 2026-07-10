@@ -5,12 +5,15 @@ description: |
   runtime flows, how to run, and where to start — without dumping the tree.
 phases:
   - name: orient
+    model_class: cheap-fast
     goal: Skim README, manifests, entry points, and project rules.
     exit_condition: 2–3 sentence product + structure summary is possible.
   - name: map
+    model_class: workhorse
     goal: Produce a concise contributor map (flows, dirs, commands, conventions).
     exit_condition: A new contributor can find the right place for a typical change.
   - name: handoff
+    model_class: cheap-fast
     goal: Start-here list, footguns, open questions, optional next loop.
     exit_condition: Handoff message sent.
 triggers:

@@ -5,12 +5,15 @@ description: |
   chain a small composition. Skips ceremony for trivial work.
 phases:
   - name: classify
+    model_class: high-reasoning
     goal: Pick the smallest fitting loop or composition from the repo catalog.
     exit_condition: Composition stated; user had a beat to redirect.
   - name: run
-    goal: Execute each selected loop fully; respect exit gates between steps.
+    model_class: workhorse
+    goal: Execute each selected loop fully; respect exit gates between steps. Nested loops follow their own model_class map.
     exit_condition: Composition complete or escalated.
   - name: summarize
+    model_class: cheap-fast
     goal: Recap loops run, contributions, state, leftovers.
     exit_condition: Summary sent.
 triggers:

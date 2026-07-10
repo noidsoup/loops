@@ -4,23 +4,35 @@
 
 Say "use the loops," and the agent picks the right workflow — plan, build, test, review, stress-test — and runs it end-to-end. No CLI. No accounts. No service. The repo is the product.
 
-## Install for all Cursor projects (recommended)
+## Install for all Cursor + Claude Code projects (recommended)
 
-Make loops available in **every** Cursor project on this machine:
+Make loops available in **every** Cursor and Claude Code project on this machine:
 
 ```bash
 git clone git@github.com:noidsoup/loops.git ~/Code/loops   # or your preferred path
 cd ~/Code/loops
 node adapters/emit.js
-node adapters/install-global.js
+node adapters/install-global.js                # both (default)
+# node adapters/install-global.js --cursor-only
+# node adapters/install-global.js --claude-only
 ```
 
 What that does:
 
 1. Emits Cursor rules + Claude skills from canonical `loop.md` files
 2. Creates `~/.loops` → this repo (stable path)
-3. Writes `~/.cursor/rules/loops.mdc` (`alwaysApply`) so every project knows loops exist
-4. Symlinks emitted rules/skills into `~/.cursor/` with a `loops-` prefix (avoids colliding with other skills like Hermes `plan-and-implement`)
+3. **Cursor:** writes `~/.cursor/rules/loops.mdc` (`alwaysApply`) and symlinks `loops-*` rules/skills under `~/.cursor/`
+4. **Claude Code:** writes `~/.claude/rules/loops.md` (user-level always-on) and installs `~/.claude/skills/loops-*/` (SKILL.md `name:` matches the folder; supporting files symlinked)
+
+The `loops-` prefix avoids colliding with other skills (e.g. Hermes `plan-and-implement`).
+
+### Using loops in Claude Code
+
+- Say **"use the loops"** — awareness rule + dispatcher skill route you
+- Or invoke a skill directly: `/loops-dispatcher`, `/loops-tdd`, `/loops-plan-and-implement`, etc.
+- List skills in-session with `/skills` if your Claude Code build supports it
+
+Claude limitation vs Cursor: Claude has no `alwaysApply` `.mdc` flag. User-level `~/.claude/rules/loops.md` is the equivalent always-on hook; skills still load on demand via description match or `/loops-*`.
 
 Update later:
 
@@ -34,10 +46,12 @@ node adapters/install-global.js
 Uninstall:
 
 ```bash
-node adapters/install-global.js --uninstall
+node adapters/install-global.js --uninstall                 # both
+node adapters/install-global.js --uninstall --claude-only
+node adapters/install-global.js --uninstall --cursor-only
 ```
 
-If Cursor ever fails to follow symlinks for rules/skills, re-run with `--copy`:
+If Cursor or Claude ever fails to follow symlinks for rules/skills, re-run with `--copy`:
 
 ```bash
 node adapters/install-global.js --copy
@@ -83,9 +97,11 @@ You don't name loops. The agent classifies intent and dispatches.
 
 ```
 ~/.loops/                           ← symlink to the loops repo
-~/.cursor/rules/loops.mdc           ← alwaysApply awareness
+~/.cursor/rules/loops.mdc           ← Cursor alwaysApply awareness
 ~/.cursor/rules/loops-*.mdc         ← emitted loop rules (symlinked)
 ~/.cursor/skills/loops-*/           ← emitted skills (symlinked, namespaced)
+~/.claude/rules/loops.md            ← Claude user-level always-on awareness
+~/.claude/skills/loops-*/           ← Claude skills (namespaced; /loops-<name>)
 ```
 
 Canonical definitions: `~/.loops/dispatcher/`, `~/.loops/loops/<name>/`, `~/.loops/personas/`.
@@ -156,4 +172,4 @@ node adapters/install-global.js   # if using global install
 
 ## Status
 
-v0.1.0 — catalog expanded. Flagships (`plan-and-implement`, `tdd`, `sar`, `adversarial-gate`, `use-the-loop`), plus `reproduce-and-fix`, `migrate`, `explain-codebase`, and mega-loop `swarm`. Personas catalog in `personas/`. Global Cursor install via `adapters/install-global.js`.
+v0.1.0 — catalog expanded. Flagships (`plan-and-implement`, `tdd`, `sar`, `adversarial-gate`, `use-the-loop`), plus `reproduce-and-fix`, `migrate`, `explain-codebase`, and mega-loop `swarm`. Personas catalog in `personas/`. Global Cursor + Claude Code install via `adapters/install-global.js`.
