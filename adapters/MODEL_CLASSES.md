@@ -6,40 +6,43 @@ Shared map for phase-level `model_class` on each loop. Canonical preference orde
 
 ## Class → model table (Cursor)
 
-**Grok-only model family.** All three classes use `grok-4.5` with a reasoning effort parameter that scales with the phase. No more jumping between vendors for the same model run — one platform, one bill, one model.
+**Different models for different classes.** Cursor exposes one slug per model (no `*-thinking-high` or `*-fast` slug variants in the picker or API). Reasoning effort is implicit in which model you pick, not a parameter. The current canonical Cursor model list is at <https://cursor.com/docs/models> — the table below is verified against that page.
 
-**Composer-fast is banned** (independent rule): `composer-2.5-fast` consumes more usage than regular `composer-2.5` and is never routed to. The same applies to any `*-fast` variant from any vendor.
+**`composer-*-fast` is banned** (future-proofing): if Cursor ever ships a `composer-2.5-fast` or any other `*-fast` variant, never route to it. The same rule applies to any `*-fast` variant from any vendor. Today no such variant exists, but the ban is preserved so a future Cursor release doesn't catch loops off-guard.
 
-| Class | Model | Reasoning effort | When |
+| Class | Primary model | Fallback (if primary unavailable) | Notes |
 |---|---|---|---|
-| `high-reasoning` | `grok-4.5` | `high` (max thinking) | Preferred when API usage is up. Fallback within the class drops one reasoning tier (see below). |
-| `workhorse` | `grok-4.5` | `medium` | Default for normal implementation work. |
-| `cheap-fast` | `grok-4.5` | `low` | Wraps, summaries, commit messages. |
+| `high-reasoning` | `Claude Opus 4.8` | `Grok 4.5` (use when Opus usage is up) | 300k context, 1M in Max Mode. The strongest available non-Fable model in Cursor. |
+| `workhorse` | `Grok 4.5` | `Composer 2.5` (Cursor's in-house, use when Grok usage is up) | 256k context. The Cursor × SpaceXAI partnership model. |
+| `cheap-fast` | `Composer 2.5` | `Gemini 3.5 Flash` (use when Composer usage is up) | 200k context. Cursor's in-house agentic model; fastest, cheapest Cursor-side option. |
 
-**Reasoning-tier fallback within a class (when API usage is exhausted for the requested tier):**
+**Fable ban:** `Claude Fable 5` exists in Cursor but is **never** routed to by loops — same ban as on Nous Portal. If a `high-reasoning` phase's only "available" model is Fable, the agent must fall back to `Grok 4.5`, not use Fable.
 
-| Class | Preferred | Tier drop 1 | Tier drop 2 | Cross-vendor last resort |
-|---|---|---|---|---|
-| `high-reasoning` | grok-4.5 high | grok-4.5 medium | grok-4.5 low | `claude-opus-4-8-thinking-high` (separate bill) |
-| `workhorse` | grok-4.5 medium | grok-4.5 low | — | `claude-opus-4-8-thinking-high` |
-| `cheap-fast` | grok-4.5 low | — | — | `minimax/minimax-m3` (free / always on) |
+### Cross-vendor fallback (last resort)
 
-**Slug note:** Cursor may expose reasoning tiers as separate slugs (`grok-4.5`, `grok-4.5-thinking-medium`, `grok-4.5-thinking-high`) or as a single slug with a parameter. The table above uses the conceptual model; verify the actual slugs against Cursor's current model list and update this file if they differ.
+When the entire Cursor chain above is exhausted (quota, rate-limit, "model not available"), the last-resort fallback is **off Cursor**:
 
-"Unavailable" / "API usage up" means: usage exhausted, rate-limited, quota exceeded, model not allowed, or the Task/subagent call rejects the slug. The agent must not loop forever trying unavailable tiers — drop one tier, retry, drop again, then fall to cross-vendor.
+| Class | Cross-vendor fallback |
+|---|---|
+| `high-reasoning` | `claude-opus-4-8-thinking-high` via Nous Portal (~$0.10/phase) — see Hermes section. |
+| `workhorse` | `claude-sonnet-5` via Nous Portal (~$0.04/phase). |
+| `cheap-fast` | `minimax/minimax-m3` via Nous Portal (free, always on). |
 
-## Cursor runtime (preferred, best-effort)
+If a phase is in a project running on Claude Code, the "cross-vendor fallback" stays on Claude (`claude-opus-4-5` for high-reasoning, etc.) — see Claude Code section below.
+
+### Cursor runtime (preferred, best-effort)
 
 When running a loop **in Cursor**, for each phase:
 
-1. Read that phase’s `model_class` from `loop.yaml` (or the loop’s Model selection section).
-2. Resolve the preferred slug from the table above.
-3. **`high-reasoning`:** Prefer dispatching the phase via **Task / subagent** with `model: grok-4.5` and `reasoning_effort: high` when the product allows it. If Task/subagent or that tier is unavailable, drop to `medium`, then `low`, then `claude-opus-4-8-thinking-high`. Never block the loop.
-4. **`workhorse`:** Implement in the main agent, or a workhorse subagent with `model: grok-4.5` and `reasoning_effort: medium`. Fallback: `reasoning_effort: low`, then `claude-opus-4-8-thinking-high` if Grok is fully unavailable.
-5. **`cheap-fast`:** Stay in the main session with `grok-4.5` at `reasoning_effort: low`. Fallback: `minimax/minimax-m3` (always on, separate bill).
-6. **Fallback protocol:** If the chosen reasoning tier fails due to usage limits, quota, “model not available”, or similar — **immediately retry the same step** with one reasoning tier lower (high → medium → low). If low also fails, fall to the cross-vendor last resort (`claude-opus-4-8-thinking-high` for high-reasoning, `minimax/minimax-m3` for cheap-fast). Tell the user in **one short line** which tier you fell to. Do **not** stall asking permission.
-7. If already on Grok as fallback, **continue** — do not loop forever trying banned or unavailable models.
-8. Never select Fable.
+1. Read that phase’s `model_class` from `loop.yaml` (or the loop's Model selection section).
+2. Resolve the primary slug from the table above.
+3. **`high-reasoning`:** Prefer dispatching the phase via **Task / subagent** with `model: "Claude Opus 4.8"`. If the primary is unavailable (usage up, rate-limited, "model not available"), fall back to `Grok 4.5`, then cross-vendor. Never block the loop.
+4. **`workhorse`:** Implement in the main agent, or a workhorse subagent with `model: "Grok 4.5"`. Fallback to `Composer 2.5` if Grok usage is up; cross-vendor if both unavailable.
+5. **`cheap-fast`:** Stay in the main session with `model: "Composer 2.5"`. Fallback to `Gemini 3.5 Flash` if Composer usage is up; cross-vendor if both unavailable.
+6. **Fallback protocol:** If the chosen model fails due to usage limits, quota, "model not available", or similar — **immediately retry the same step** with the class's fallback. Tell the user in **one short line** which model you fell to. Do **not** stall asking permission.
+7. If on last-resort cross-vendor, **continue** — do not loop forever trying banned or unavailable models.
+8. **Never select Fable.** Even if Fable is the only Cursor model with capacity, fall back to Grok 4.5 instead.
+9. **Max Mode:** enable Cursor's Max Mode for high-reasoning phases that need >200k context (most Cursor models support 1M in Max Mode). Do not enable Max Mode for workhorse or cheap-fast — it costs more and doesn't help.
 
 Dispatcher classification may stay on the current session model. After dispatch, the **chosen loop** owns model-class behavior for its phases.
 
