@@ -10,7 +10,7 @@ If the request is "add tests for existing code with no behavior change," still f
 
 ## Model selection (Cursor)
 
-See `adapters/MODEL_CLASSES.md`. **red** (test design) → `high-reasoning` preferred via Task/subagent; **green / refactor** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **red** (test design) → `high-reasoning` preferred via Task/subagent; **green / refactor** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
 
 ## Phase 1 — Red
 

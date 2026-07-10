@@ -1,0 +1,43 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/noidsoup/loops/schema/loop.schema.json",
+  "title": "loops loop.yaml",
+  "description": "Lightweight schema for loops loop.yaml / dispatcher loop.yaml. Validated by adapters/emit.js (subset checks).",
+  "type": "object",
+  "required": ["name", "version", "description"],
+  "properties": {
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+" },
+    "description": { "type": "string" },
+    "model_class": {
+      "type": "string",
+      "enum": ["high-reasoning", "workhorse", "cheap-fast"],
+      "description": "Top-level class (dispatcher). Loops use per-phase model_class instead."
+    },
+    "phases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "model_class", "goal", "exit_condition"],
+        "properties": {
+          "name": { "type": "string" },
+          "model_class": {
+            "type": "string",
+            "enum": ["high-reasoning", "workhorse", "cheap-fast"]
+          },
+          "goal": { "type": "string" },
+          "exit_condition": { "type": "string" }
+        }
+      }
+    },
+    "triggers": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "personas": { "type": "object" },
+    "classification": { "type": "object" },
+    "consumes": { "type": "array" },
+    "produces": { "type": "array" }
+  },
+  "additionalProperties": true
+}

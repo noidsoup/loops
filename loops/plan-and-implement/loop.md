@@ -10,7 +10,7 @@ If the request turns out to be trivial (one-line fix, one-file change with obvio
 
 ## Model selection (Cursor)
 
-See `adapters/MODEL_CLASSES.md`. Phase map: **spec / confirm** → `high-reasoning` (Task/subagent); **implement** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). Phase map: **spec / confirm** → `high-reasoning` (Task/subagent); **implement** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
 
 ## Phase 1 — Spec
 

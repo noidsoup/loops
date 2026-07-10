@@ -14,7 +14,7 @@ If the task is trivial (typo, one-liner, pure Q&A), say so and just do it — do
 
 ## Model selection (Cursor)
 
-See `adapters/MODEL_CLASSES.md`. **classify** → `high-reasoning` (Task/subagent). **execute** stages follow each nested loop’s `model_class` map. **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **classify** → `high-reasoning` (Task/subagent). **execute** stages follow each nested loop’s `model_class` map. **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
 
 ## When this loop runs
 

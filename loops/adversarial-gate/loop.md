@@ -10,11 +10,11 @@ Don't use for greenfield design exploration (`sar`) or building from scratch (`p
 
 ## Model selection (Cursor)
 
-See `adapters/MODEL_CLASSES.md`. Phase map: **scope** → `workhorse`; **attack** (persona rounds) → `high-reasoning` via Task/subagent; **applying the fix budget** inside attack → `workhorse`; **verdict** → `high-reasoning`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). Phase map: **scope** → `workhorse`; **attack** (persona rounds) → `high-reasoning` via Task/subagent; **applying the fix budget** inside attack → `workhorse`; **verdict** → `high-reasoning`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
 
 ## Personas (review lenses)
 
-Personas live in `personas/`. Rotate across rounds so you don't rubber-stamp your own work.
+Personas live at `LOOPS_ROOT/personas/<name>.md`. **At the start of each attack round, Read that persona file** and adopt its voice for the round only. Rotate so you don't rubber-stamp your own work.
 
 | Round | Persona | Focus |
 |---|---|---|
@@ -46,7 +46,7 @@ If the artifact is vague ("review my code"), narrow it before attacking. Read th
 
 ## Phase 2 — Attack (round N)
 
-Adopt the round's persona. Write **specific** attacks (2–6). Quote lines / paths. Score each:
+**Read** `LOOPS_ROOT/personas/<persona>.md` for this round, then adopt that lens. Write **specific** attacks (2–6). Quote lines / paths. Score each:
 
 - **Critical** — must fix before merge (security, data loss, correctness).
 - **Important** — should fix; real-world likelihood or missing critical-path coverage.

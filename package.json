@@ -1,0 +1,17 @@
+{
+  "name": "loops",
+  "version": "0.1.1",
+  "private": true,
+  "description": "Portable workflow loops for Cursor and Claude Code",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "emit": "node adapters/emit.js",
+    "emit:check": "node adapters/emit.js --check",
+    "test": "node --test test/*.test.js && node adapters/emit.js --check",
+    "install:global": "node adapters/install-global.js",
+    "install:global:dry": "node adapters/install-global.js --dry-run --no-emit"
+  }
+}

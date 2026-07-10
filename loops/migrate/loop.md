@@ -10,7 +10,7 @@ Don't use for adding a brand-new dependency as part of a feature (`plan-and-impl
 
 ## Model selection (Cursor)
 
-See `adapters/MODEL_CLASSES.md`. **inventory / plan** → `high-reasoning` (Task/subagent); **execute** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **inventory / plan** → `high-reasoning` (Task/subagent); **execute** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
 
 ## Phase 1 — Inventory
 

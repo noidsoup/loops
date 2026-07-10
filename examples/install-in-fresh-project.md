@@ -2,7 +2,7 @@
 
 This shows the full flow from "fresh repo" to "agent using loops."
 
-> **Prefer global install** when you want loops in every Cursor project on one machine — see the README "Install for all Cursor projects" section (`node adapters/install-global.js`). The steps below are the **per-project** alternative (clone into `.loops/`).
+> **Prefer global install** when you want loops in every Cursor + Claude Code project on one machine — see the README (`node adapters/install-global.js`). The steps below are the **per-project** alternative (clone into `.loops/`). Both paths use the same `loops-*` skill/rule names.
 
 ## Step 1 — Fresh project
 
@@ -19,20 +19,23 @@ git clone git@github.com:noidsoup/loops.git .loops
 node .loops/adapters/emit.js
 ```
 
-After this, your project has:
+Because the clone is named `.loops`, emit writes into the **project** root (not inside `.loops/`):
 
 ```
 my-cool-project/
-├── .loops/                  ← this repo, the source of truth
-├── .cursor/rules/           ← Cursor reads these
-└── .claude/skills/          ← Claude Code reads these
+├── .loops/                         ← canonical source
+├── .cursor/rules/loops-*.mdc       ← emitted Cursor rules
+├── .claude/skills/loops-*/         ← emitted Claude skills (namespaced)
+├── .cursor/rules/loops.mdc         ← awareness (next step)
+└── .claude/rules/loops.md          ← Claude awareness (next step)
 ```
 
-You also want to copy `INSTALL.mdc` from `.loops/` so Cursor's agent knows loops are installed:
+Install awareness rules:
 
 ```bash
-mkdir -p .cursor/rules
+mkdir -p .cursor/rules .claude/rules
 cp .loops/INSTALL.mdc .cursor/rules/loops.mdc
+cp .loops/INSTALL-CLAUDE.md .claude/rules/loops.md
 ```
 
 If this machine already has a global install (`~/.cursor/rules/loops.mdc` + `~/.loops`), you can skip the per-project clone — the agent will use the global root. Use a project-local `.loops/` only when you want a pinned or shareable copy.
@@ -43,9 +46,7 @@ Say:
 
 > "use the loops to add a CLI command that prints the current time"
 
-The agent reads `.cursor/rules/loops.mdc` (or `.claude/skills/dispatcher/SKILL.md`), sees loops are installed, runs the dispatcher, picks `plan-and-implement`, specs the change, and implements it.
-
-Other intents the dispatcher knows:
+The agent reads the awareness rule, runs the dispatcher, picks `plan-and-implement`, specs the change, and implements it.
 
 | You say | Loop |
 |---|---|
@@ -58,24 +59,20 @@ Other intents the dispatcher knows:
 | "swarm this feature" | `swarm` (full pipeline) |
 | "use the loops on this" (ambiguous) | `use-the-loop` |
 
-## Step 4 — Editing a loop
+Claude Code: you can also invoke `/loops-dispatcher` or `/loops-plan-and-implement` directly.
 
-Loops evolve. Edit the canonical source:
+## Step 4 — Editing a loop
 
 ```bash
 $EDITOR .loops/loops/plan-and-implement/loop.md
 node .loops/adapters/emit.js
 ```
 
-Both agents pick up the new behavior.
+Both agents pick up the new behavior (emitted files refresh under the project root).
 
 ## Step 5 — Updating loops
 
-When the upstream `loops` repo gets new loops or fixes:
-
 ```bash
-cd .loops
-git pull
-cd ..
+cd .loops && git pull && cd ..
 node .loops/adapters/emit.js
 ```

@@ -1,20 +1,11 @@
-# Adversarial eval prompt — evaluate `loops` v0.1.0
+# Adversarial eval prompt — evaluate `loops`
 
 **How to use:** Copy everything below the `---PROMPT START---` line into
 a high-reasoning model (e.g. Opus / GPT high). The model is given the repo
 state, the design intent, and the source inventory, and is asked to attack the
 design + propose 3-5 new loops.
 
-You can also run this with the local `adversarial_loop.py` skill:
-
-```bash
-# from the loops repo
-adversarial_loop.py --work evals/adversarial-eval-loops.md --mode design --rounds 2
-```
-
-The `design` mode is the right pick — this is a design review, not a diff or
-plan. Cap at 2 rounds; we want a second pass that engages with the first
-round's critique, not a 3-round trench war.
+This is a **manual** design review prompt (no local CLI required).
 
 ---
 
@@ -61,8 +52,8 @@ Constraints the creator is working under:
 
 THE ARTIFACT
 ------------
-The full repo state is at: https://github.com/noidsoup/loops  (private)
-Local working copy: ~/code/loops
+The full repo state is at: https://github.com/noidsoup/loops
+Local working copy: the loops clone on disk (e.g. ~/Code/loops or ~/.loops)
 
 Key files to read and attack:
   - README.md                          (the marketing claim + install)

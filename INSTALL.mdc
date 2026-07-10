@@ -9,17 +9,19 @@ This project has `loops` installed at `.loops/` (per-project clone). Loops are p
 
 > **Global install alternative:** On machines that ran `node adapters/install-global.js`, loops are also available via `~/.loops` for every project. If this workspace has no `.loops/` directory, use `~/.loops` (or the absolute path in `~/.cursor/rules/loops.mdc`) instead of the `.loops/` paths below. Prefer project-local `.loops/` when both exist.
 
+Below, `LOOPS_ROOT` means `.loops/` in this project (or `~/.loops` when using the global install).
+
 ## What to do
 
-1. **When the user says "use the loops"** (or anything equivalent — "loops?", "pick a loop", "which loop should I use"), read `.loops/dispatcher/loop.md` and follow it. It will tell you how to classify the request and load the right loop.
+1. **When the user says "use the loops"** (or anything equivalent — "loops?", "pick a loop", "which loop should I use"), read `LOOPS_ROOT/dispatcher/loop.md` and follow it. It will tell you how to classify the request and load the right loop.
 
-2. **When the user makes a request that maps to a known loop** (building a feature, writing tests, reviewing a PR, stress-testing a design, reproducing a bug, migrating, explaining the codebase, swarming a full pipeline), you can short-circuit the dispatcher: read the appropriate `.loops/loops/<name>/loop.md` directly and follow it.
+2. **When the user makes a request that maps to a known loop** (building a feature, writing tests, reviewing a PR, stress-testing a design, reproducing a bug, migrating, explaining the codebase, swarming a full pipeline), you can short-circuit the dispatcher: read the appropriate `LOOPS_ROOT/loops/<name>/loop.md` directly and follow it.
 
 3. **When the user names a loop explicitly** ("run plan-and-implement", "do tdd on this", "swarm this"), read that loop's `loop.md` and follow it.
 
 4. **If you're not sure** whether a request fits a loop, run the dispatcher. It will either pick one or route to `use-the-loop` which handles ambiguous cases. Explicit "swarm" keywords route to `swarm`, not `use-the-loop`.
 
-## Available loops (in `.loops/loops/`)
+## Available loops (in `LOOPS_ROOT/loops/`)
 
 - `plan-and-implement` — Spec-then-implement for new features, refactors, non-trivial changes.
 - `tdd` — Test-driven development. Lock in behavior with a test suite.
@@ -31,25 +33,25 @@ This project has `loops` installed at `.loops/` (per-project clone). Loops are p
 - `swarm` — Mega-loop. Full beginning-to-end ship pipeline.
 - `use-the-loop` — Meta-router. Smallest composition; open-ended tasks.
 
-Personas under `.loops/personas/` are review lenses for `sar` / `adversarial-gate`, not top-level loops.
+Personas under `LOOPS_ROOT/personas/` are review lenses for `sar` / `adversarial-gate`, not top-level loops. Those loops **Read** `personas/<name>.md` before each persona step.
 
-## Model selection (Cursor — required)
+## Discovery helpers (emitted, namespaced)
 
-Phases declare `model_class` in each loop’s `loop.yaml`. Full map: `.loops/adapters/MODEL_CLASSES.md` (or `~/.loops/adapters/MODEL_CLASSES.md` on global install).
+After `node LOOPS_ROOT/adapters/emit.js` (from a `.loops/` clone, emit writes into the **project** root):
 
-| Class | Prefer (in order) | Fallback if unavailable |
-|---|---|---|
-| `high-reasoning` | `claude-opus-4-8-thinking-high`, then `gpt-5.5-high` or `claude-sonnet-5-thinking-high` | `grok-4.5-xhigh` |
-| `workhorse` | `composer-2.5`, then `composer-2.5-fast` | `grok-4.5-xhigh` |
-| `cheap-fast` | `composer-2.5-fast` | `grok-4.5-xhigh` |
+- Cursor: `.cursor/rules/loops-*.mdc`
+- Claude Code: `.claude/skills/loops-*/` (invoke `/loops-dispatcher`, etc.)
+- Claude awareness: `.claude/rules/loops.md` (copy from `LOOPS_ROOT/INSTALL-CLAUDE.md` on per-project install)
 
-**Banned:** any Fable model. Never recommend or use them.
+The `loops-` prefix avoids colliding with other skills (e.g. Hermes `plan-and-implement`). Prefer reading canonical `LOOPS_ROOT/**/loop.md` when running a loop.
 
-In Cursor: for `high-reasoning` phases, dispatch via Task/subagent with `model` set; for `workhorse`, use main agent or `composer-2.5`. On usage/rate-limit/unavailable — immediately retry with `grok-4.5-xhigh` and tell the user in one line. Do not ask permission. Claude Code: classes are advisory (switch session if needed).
+## Model selection
+
+Phases declare `model_class` in each loop’s `loop.yaml`. **Single source of truth:** `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. Prefer the strongest available non-Fable model; use Task/subagent for `high-reasoning` when available; fall back to `grok-4.5-xhigh` on Cursor usage limits. Never use Fable. Claude Code: classes are advisory.
 
 ## What NOT to do
 
-- Don't read `.loops/loop.md` files just to "understand the project." Only load them when the user has triggered a loop.
+- Don't read `LOOPS_ROOT` loop files just to "understand the project." Only load them when the user has triggered a loop.
 - Don't invent new loops. If nothing fits, route to `use-the-loop`.
 - Don't run loops without following the phases. Each loop's `loop.md` defines its own contract.
 - Don't treat personas as dispatcher options.
@@ -62,9 +64,9 @@ If the user edits a canonical `loop.md` in `.loops/`, run:
 node .loops/adapters/emit.js
 ```
 
-This regenerates `.cursor/rules/*.mdc` and `.claude/skills/*/SKILL.md` from the canonical source. Do this automatically when you notice the canonical files have been edited.
+This regenerates project `.cursor/rules/loops-*.mdc` and `.claude/skills/loops-*/` from the canonical source.
 
-For a **global** install (all Cursor projects on this machine), refresh with:
+For a **global** install (all projects on this machine), refresh with:
 
 ```bash
 cd ~/.loops && git pull && node adapters/emit.js && node adapters/install-global.js

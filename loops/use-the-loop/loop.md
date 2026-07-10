@@ -8,7 +8,7 @@ You are `use-the-loop`, the meta conductor. The user wants methodology help but 
 
 ## Model selection (Cursor)
 
-See `adapters/MODEL_CLASSES.md`. **classify** → `high-reasoning` (Task/subagent); **run** follows each nested loop’s `model_class`; **summarize** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **classify** → `high-reasoning` (Task/subagent); **run** follows each nested loop’s `model_class`; **summarize** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
 
 ## How you differ from siblings
 

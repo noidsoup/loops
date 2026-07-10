@@ -10,7 +10,7 @@ If the issue is already reproduced with a failing test, skip to Phase 3. If it's
 
 ## Model selection (Cursor)
 
-See `adapters/MODEL_CLASSES.md`. **reproduce** (diagnosis) → `high-reasoning` via Task/subagent when the bug is non-obvious; **failing-test / fix** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **reproduce** (diagnosis) → `high-reasoning` via Task/subagent when the bug is non-obvious; **failing-test / fix** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
 
 ## Phase 1 — Reproduce
 

@@ -7,9 +7,11 @@
  *   node adapters/install-global.js --cursor-only  # Cursor only
  *   node adapters/install-global.js --claude-only  # Claude Code only
  *   node adapters/install-global.js --no-emit      # install only (assume emit done)
+ *   node adapters/install-global.js --dry-run      # print plan, make no changes
  *   node adapters/install-global.js --uninstall
  *   node adapters/install-global.js --uninstall --claude-only
  *   node adapters/install-global.js --copy         # copy instead of symlink
+ *   node adapters/install-global.js --help
  *
  * What it does:
  *   1. Runs adapters/emit.js (unless --no-emit)
@@ -21,7 +23,7 @@
  *   Claude Code:
  *     6. Writes ~/.claude/rules/loops.md (user-level always-on awareness)
  *     7. Installs skills → ~/.claude/skills/loops-<name>/
- *        (SKILL.md rewritten so frontmatter name: matches folder; loop.yaml symlinked)
+ *        (SKILL.md already namespaced by emit; marker + supporting files linked)
  *
  * Collision policy: never overwrite an existing path unless it is already a
  * loops-managed install. Skill/rule names are always prefixed with `loops-`.
@@ -50,6 +52,8 @@ const NO_EMIT = args.has('--no-emit');
 const USE_COPY = args.has('--copy');
 const CURSOR_ONLY = args.has('--cursor-only');
 const CLAUDE_ONLY = args.has('--claude-only');
+const DRY_RUN = args.has('--dry-run');
+const HELP = args.has('--help') || args.has('-h');
 
 if (CURSOR_ONLY && CLAUDE_ONLY) {
   die('use only one of --cursor-only / --claude-only');
@@ -61,6 +65,22 @@ const DO_CLAUDE = !CURSOR_ONLY;
 function die(msg) {
   console.error(`error: ${msg}`);
   process.exit(1);
+}
+
+function printHelp() {
+  console.log(`Usage: node adapters/install-global.js [options]
+
+Install loops globally for Cursor and/or Claude Code.
+
+  (default)         Emit + install both Cursor and Claude
+  --cursor-only     Cursor only
+  --claude-only     Claude Code only
+  --no-emit         Skip adapters/emit.js
+  --copy            Copy instead of symlink
+  --dry-run         Print planned actions; make no changes
+  --uninstall       Remove managed global install
+  --help            Show this help
+`);
 }
 
 function ensureDir(dir) {
@@ -265,21 +285,28 @@ function installCursorRulesAndSkills() {
   const names = listLoopNames();
 
   for (const name of names) {
-    const ruleSrc = path.join(REPO, '.cursor', 'rules', `${name}.mdc`);
-    const skillSrc = path.join(REPO, '.claude', 'skills', name);
-    const ruleDest = path.join(CURSOR_RULES, `${PREFIX}${name}.mdc`);
-    const skillDest = path.join(CURSOR_SKILLS, `${PREFIX}${name}`);
+    const prefixed = `${PREFIX}${name}`;
+    const ruleSrc = path.join(REPO, '.cursor', 'rules', `${prefixed}.mdc`);
+    const skillSrc = path.join(REPO, '.claude', 'skills', prefixed);
+    const ruleDest = path.join(CURSOR_RULES, `${prefixed}.mdc`);
+    const skillDest = path.join(CURSOR_SKILLS, prefixed);
+
+    if (DRY_RUN) {
+      results.push({ status: 'dry-run', dest: ruleDest, src: ruleSrc, kind: 'rule' });
+      results.push({ status: 'dry-run', dest: skillDest, src: skillSrc, kind: 'skill' });
+      continue;
+    }
 
     if (!fs.existsSync(ruleSrc)) {
       results.push({ status: 'missing', dest: ruleDest, src: ruleSrc, kind: 'rule' });
     } else {
-      results.push({ ...linkOrCopy(ruleSrc, ruleDest), kind: 'rule' });
+      results.push({ ...linkOrCopy(ruleSrc, ruleDest, { forceManaged: true }), kind: 'rule' });
     }
 
     if (!fs.existsSync(skillSrc)) {
       results.push({ status: 'missing', dest: skillDest, src: skillSrc, kind: 'skill' });
     } else {
-      results.push({ ...linkOrCopy(skillSrc, skillDest), kind: 'skill' });
+      results.push({ ...linkOrCopy(skillSrc, skillDest, { forceManaged: true }), kind: 'skill' });
     }
   }
   return results;
@@ -335,10 +362,21 @@ function installClaudeSkills() {
   ensureDir(CLAUDE_SKILLS);
 
   for (const name of listLoopNames()) {
-    const skillSrc = path.join(REPO, '.claude', 'skills', name);
     const prefixed = `${PREFIX}${name}`;
+    const skillSrc = path.join(REPO, '.claude', 'skills', prefixed);
     const skillDest = path.join(CLAUDE_SKILLS, prefixed);
     const srcSkillMd = path.join(skillSrc, 'SKILL.md');
+
+    if (DRY_RUN) {
+      results.push({
+        status: 'dry-run',
+        dest: skillDest,
+        src: skillSrc,
+        kind: 'claude-skill',
+        mode: USE_COPY ? 'copy' : 'write+symlink',
+      });
+      continue;
+    }
 
     if (!fs.existsSync(srcSkillMd)) {
       results.push({ status: 'missing', dest: skillDest, src: skillSrc, kind: 'claude-skill' });
@@ -364,7 +402,6 @@ function installClaudeSkills() {
     const rewritten = rewriteSkillName(raw, name, prefixed);
     fs.writeFileSync(path.join(skillDest, 'SKILL.md'), rewritten);
 
-    // Supporting files: symlink (or copy) everything except SKILL.md
     for (const entry of fs.readdirSync(skillSrc)) {
       if (entry === 'SKILL.md') continue;
       const from = path.join(skillSrc, entry);
@@ -427,10 +464,11 @@ function uninstallCursor(removed, skipped) {
   }
 
   for (const name of listLoopNames()) {
-    const ruleDest = path.join(CURSOR_RULES, `${PREFIX}${name}.mdc`);
-    const skillDest = path.join(CURSOR_SKILLS, `${PREFIX}${name}`);
-    const ruleSrc = path.join(REPO, '.cursor', 'rules', `${name}.mdc`);
-    const skillSrc = path.join(REPO, '.claude', 'skills', name);
+    const prefixed = `${PREFIX}${name}`;
+    const ruleDest = path.join(CURSOR_RULES, `${prefixed}.mdc`);
+    const skillDest = path.join(CURSOR_SKILLS, prefixed);
+    const ruleSrc = path.join(REPO, '.cursor', 'rules', `${prefixed}.mdc`);
+    const skillSrc = path.join(REPO, '.claude', 'skills', prefixed);
     removeIfManaged(ruleDest, ruleSrc, removed, skipped, { allowPrefixedSymlink: true });
     removeIfManaged(skillDest, skillSrc, removed, skipped, { allowPrefixedSymlink: true });
   }
@@ -550,12 +588,41 @@ function verify() {
 }
 
 function main() {
+  if (HELP) {
+    printHelp();
+    return;
+  }
+
   if (UNINSTALL) {
+    if (DRY_RUN) {
+      console.log('dry-run: would uninstall managed global install');
+      return;
+    }
     uninstall();
     return;
   }
 
-  if (!NO_EMIT) runEmit();
+  if (!NO_EMIT) {
+    if (DRY_RUN) {
+      console.log('dry-run: would run adapters/emit.js');
+    } else {
+      runEmit();
+    }
+  }
+
+  if (DRY_RUN) {
+    console.log(`dry-run: would symlink ${LOOPS_LINK} → ${REPO}`);
+    if (DO_CURSOR) {
+      console.log(`dry-run: would write ${path.join(CURSOR_RULES, CURSOR_AWARENESS)}`);
+      installCursorRulesAndSkills();
+    }
+    if (DO_CLAUDE) {
+      console.log(`dry-run: would write ${path.join(CLAUDE_RULES, CLAUDE_AWARENESS)}`);
+      installClaudeSkills();
+    }
+    printSummary([{ status: 'dry-run', dest: LOOPS_LINK, kind: 'root' }]);
+    return;
+  }
 
   const results = [];
   results.push({ ...installLoopsSymlink(), kind: 'root' });

@@ -41,7 +41,7 @@ Below, `LOOPS_ROOT` means that resolved path.
 - `swarm` — Mega-loop. Full beginning-to-end ship pipeline.
 - `use-the-loop` — Meta-router. Smallest composition; open-ended tasks.
 
-Personas under `LOOPS_ROOT/personas/` are review lenses for `sar` / `adversarial-gate`, not top-level loops.
+Personas under `LOOPS_ROOT/personas/` are review lenses for `sar` / `adversarial-gate`, not top-level loops. Those loops **Read** `personas/<name>.md` before each persona step.
 
 ## Discovery helpers (optional)
 
@@ -54,31 +54,17 @@ Names are prefixed with `loops-` so they do not collide with other skills.
 
 Prefer reading canonical `LOOPS_ROOT/**/loop.md` when running a loop. The emitted files are discovery aids.
 
-## Model selection (Cursor — required)
+## Model selection
 
-Phases declare a `model_class` in each loop’s `loop.yaml`. Full map: `LOOPS_ROOT/adapters/MODEL_CLASSES.md`.
+Phases declare a `model_class` in each loop’s `loop.yaml`. **Single source of truth:** `LOOPS_ROOT/adapters/MODEL_CLASSES.md`.
 
-| Class | Prefer (in order) | Fallback if unavailable |
-|---|---|---|
-| `high-reasoning` | `claude-opus-4-8-thinking-high`, then `gpt-5.5-high` or `claude-sonnet-5-thinking-high` | `grok-4.5-xhigh` |
-| `workhorse` | `composer-2.5`, then `composer-2.5-fast` | `grok-4.5-xhigh` |
-| `cheap-fast` | `composer-2.5-fast` | `grok-4.5-xhigh` |
-
-**Banned:** any Fable / `fable-5` / `claude-fable-*` model. Never recommend or use them.
-
-When running a loop **in Cursor**:
-
-1. Read the phase’s `model_class`.
-2. **`high-reasoning`:** Dispatch via **Task/subagent** with `model` set to the preferred high-reasoning slug. Do not do heavy planning/attack/judge in a workhorse-only parent if a high model can be spawned.
-3. **`workhorse`:** Implement in the main agent or a workhorse subagent (`composer-2.5`).
-4. **`cheap-fast`:** Prefer `composer-2.5-fast` for short handoffs; main agent is fine if already warm.
-5. **Fallback:** If the chosen model fails (usage exhausted, rate-limited, quota, “model not available”) — **immediately retry the same step** with `grok-4.5-xhigh`. Tell the user in one short line you fell back to Grok due to usage. Do not ask permission. If already on Grok, continue — do not loop forever on banned/unavailable models.
+Prefer the strongest available non-Fable model for the phase class. Use Task/subagent for `high-reasoning` when available; otherwise continue best-effort in-session. On Cursor usage/unavailable → retry with `grok-4.5-xhigh` (one short line to the user). **Banned:** any Fable model.
 
 Dispatcher classification may stay on the current model. After dispatch, the **chosen loop** owns model-class behavior.
 
 ### Claude Code (advisory)
 
-Claude often cannot switch models mid-session. Treat `model_class` as guidance: start a high-reasoning session (or a second session) when you can; otherwise continue best-effort in the current session and note once if you could not switch. Same Fable ban. No Cursor Grok slug in Claude — use the user’s best available non-Fable alternative when a preferred model is unavailable.
+Claude often cannot switch models mid-session. Treat `model_class` as guidance: start a high-reasoning session (or a second session) when you can; otherwise continue best-effort and note once if you could not switch. Same Fable ban.
 
 ## What NOT to do
 

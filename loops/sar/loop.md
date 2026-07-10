@@ -10,11 +10,11 @@ Skip for one-line fixes, pure Q&A, or when the user already has a single locked 
 
 ## Model selection (Cursor)
 
-See `adapters/MODEL_CLASSES.md`. Phase map: **spec / candidates / attack / judge** → `high-reasoning` (Task/subagent); **repair** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). Phase map: **spec / candidates / attack / judge** → `high-reasoning` (Task/subagent); **repair** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
 
 ## Personas (review lenses)
 
-Personas live in `personas/` at the repo root. Use them as lenses — adopt the voice for that step, then drop it.
+Personas live at `LOOPS_ROOT/personas/<name>.md`. **Before each persona step, Read that file** and adopt its voice for that step only, then drop it.
 
 | Step | Persona | Why |
 |---|---|---|
@@ -28,6 +28,8 @@ Personas live in `personas/` at the repo root. Use them as lenses — adopt the 
 If you only produce two candidates, still rotate at least two different attack personas. Optionally add `edge-case-analyst` or `api-contract-guardian` when the domain warrants it.
 
 ## Phase 1 — Spec
+
+**Read** `LOOPS_ROOT/personas/skeptic.md` and adopt that lens for this phase.
 
 Write a short, attackable specification (conversation-local; no required file).
 
@@ -49,7 +51,7 @@ For each candidate, briefly note: shape, trade-offs, and which acceptance checks
 
 ## Phase 3 — Attack
 
-Attack each candidate against the Phase 1 acceptance checks, using the persona rotation above.
+For each candidate, **Read** the matching persona file under `LOOPS_ROOT/personas/` (see table above) before attacking. Attack each candidate against the Phase 1 acceptance checks.
 
 For each finding, score:
 
@@ -74,7 +76,7 @@ For each candidate worth keeping:
 
 ## Phase 5 — Judge
 
-Pick the **simplest correct** survivor.
+**Read** `LOOPS_ROOT/personas/simplicity-advocate.md` (light pass). Pick the **simplest correct** survivor.
 
 1. Compare against acceptance checks (all must pass).
 2. Prefer fewer moving parts, clearer control flow, less surface area.

@@ -10,7 +10,7 @@ Don't implement features here. If they ask to change something after the map, ha
 
 ## Model selection (Cursor)
 
-See `adapters/MODEL_CLASSES.md`. **orient / handoff** → `cheap-fast`; **map** → `workhorse`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory.
+See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **orient / handoff** → `cheap-fast`; **map** → `workhorse`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory.
 
 ## Phase 1 — Orient
 
