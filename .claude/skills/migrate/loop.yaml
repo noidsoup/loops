@@ -1,0 +1,26 @@
+name: migrate
+version: 0.1.0
+description: |
+  Version or framework upgrade with inventory, checklist, rollback plan,
+  and step-by-step verification. No big-bang bumps without a safety net.
+phases:
+  - name: inventory
+    goal: Map current→target versions, blast radius, touch points, risks.
+    exit_condition: Short inventory with known unknowns listed.
+  - name: plan
+    goal: Produce ordered checklist, verifications, and rollback plan.
+    exit_condition: Checklist + rollback explicit; proceed unless stopped.
+  - name: execute
+    goal: Apply upgrade steps one at a time with verification after each.
+    exit_condition: Target versions landed; planned checks pass.
+  - name: handoff
+    goal: Report versions, changes, verification, rollback, residual risk.
+    exit_condition: Handoff message sent.
+triggers:
+  - "upgrade"
+  - "migrate"
+  - "bump version"
+  - "framework upgrade"
+  - "major version"
+consumes: [intent]
+produces: [checklist, code, handoff]

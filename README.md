@@ -2,17 +2,63 @@
 
 **Portable workflow loops for Cursor and Claude Code.**
 
-Drop `loops` into a project, say "use the loops," and the agent picks the right workflow — plan, build, test, review, stress-test — and runs it end-to-end. No CLI. No accounts. No service. The repo is the product.
+Say "use the loops," and the agent picks the right workflow — plan, build, test, review, stress-test — and runs it end-to-end. No CLI. No accounts. No service. The repo is the product.
 
-## 30-second install
+## Install for all Cursor projects (recommended)
+
+Make loops available in **every** Cursor project on this machine:
+
+```bash
+git clone git@github.com:noidsoup/loops.git ~/Code/loops   # or your preferred path
+cd ~/Code/loops
+node adapters/emit.js
+node adapters/install-global.js
+```
+
+What that does:
+
+1. Emits Cursor rules + Claude skills from canonical `loop.md` files
+2. Creates `~/.loops` → this repo (stable path)
+3. Writes `~/.cursor/rules/loops.mdc` (`alwaysApply`) so every project knows loops exist
+4. Symlinks emitted rules/skills into `~/.cursor/` with a `loops-` prefix (avoids colliding with other skills like Hermes `plan-and-implement`)
+
+Update later:
+
+```bash
+cd ~/.loops   # or the clone path
+git pull
+node adapters/emit.js
+node adapters/install-global.js
+```
+
+Uninstall:
+
+```bash
+node adapters/install-global.js --uninstall
+```
+
+If Cursor ever fails to follow symlinks for rules/skills, re-run with `--copy`:
+
+```bash
+node adapters/install-global.js --copy
+```
+
+Personas stay in the repo at `~/.loops/personas/` — loops load them from there; no separate install.
+
+## Per-project install (optional)
+
+For a single repo that should carry its own clone (e.g. sharing with teammates who don't have the global install):
 
 ```bash
 cd your-project
 git clone git@github.com:noidsoup/loops.git .loops
-node .loops/adapters/emit.js    # generate Cursor + Claude Code files
+node .loops/adapters/emit.js
+cp .loops/INSTALL.mdc .cursor/rules/loops.mdc
 ```
 
-That's it. Cursor picks up `.cursor/rules/`. Claude Code picks up `.claude/skills/`. Both use the same canonical definitions.
+Cursor picks up `.cursor/rules/`. Claude Code picks up `.claude/skills/`. Both use the same canonical definitions.
+
+If a project has `.loops/` **and** the machine has a global install, **project-local `.loops/` wins** for that workspace.
 
 ## Using it
 
@@ -23,29 +69,46 @@ In Cursor or Claude Code, say any of:
 - "write tests for the parser" → `tdd`
 - "stress-test this design" → `sar`
 - "review this PR" → `adversarial-gate`
-- "use the loops on this" → `use-the-loop` (the meta-router, for open-ended tasks)
+- "reproduce this bug" → `reproduce-and-fix`
+- "upgrade Next to 15" → `migrate`
+- "explain this codebase" → `explain-codebase`
+- "swarm this feature" → `swarm` (full ship pipeline)
+- "use the loops on this" → `use-the-loop` (smallest composition / meta-router)
 
 You don't name loops. The agent classifies intent and dispatches.
 
 ## How it works
 
+### Global layout
+
+```
+~/.loops/                           ← symlink to the loops repo
+~/.cursor/rules/loops.mdc           ← alwaysApply awareness
+~/.cursor/rules/loops-*.mdc         ← emitted loop rules (symlinked)
+~/.cursor/skills/loops-*/           ← emitted skills (symlinked, namespaced)
+```
+
+Canonical definitions: `~/.loops/dispatcher/`, `~/.loops/loops/<name>/`, `~/.loops/personas/`.
+
+### Per-project layout
+
 ```
 your-project/
 ├── .cursor/rules/                  ← Cursor reads these
+│   ├── loops.mdc                   ← from INSTALL.mdc
 │   ├── dispatcher.mdc
-│   ├── plan-and-implement.mdc
 │   └── ...
 ├── .claude/skills/                 ← Claude Code reads these
 │   ├── dispatcher/SKILL.md
-│   ├── plan-and-implement/SKILL.md
 │   └── ...
 └── .loops/                         ← this repo (source of truth)
     ├── dispatcher/loop.{md,yaml}
     ├── loops/<name>/loop.{md,yaml}
+    ├── personas/                   ← review lenses (not dispatcher options)
     └── adapters/emit.js
 ```
 
-The canonical loop definitions live in `.loops/`. The adapters emit platform-specific files (`.mdc` for Cursor, `SKILL.md` for Claude Code) from those definitions. Re-run `node .loops/adapters/emit.js` after editing any `loop.md` to regenerate.
+The adapters emit platform-specific files (`.mdc` for Cursor, `SKILL.md` for Claude Code) from those definitions. Re-run `node adapters/emit.js` after editing any `loop.md` to regenerate. For global installs, also re-run `install-global.js`.
 
 ## Loops
 
@@ -53,27 +116,34 @@ The canonical loop definitions live in `.loops/`. The adapters emit platform-spe
 |---|---|
 | `plan-and-implement` | Build a new feature, refactor, or non-trivial change. Spec first, then implement. |
 | `tdd` | Drive a change by tests. Lock in behavior with a test suite. |
-| `sar` | Spec → Attack → Repair. Adversarial review. Stress-test a design or implementation. |
+| `sar` | Spec → Attack → Repair. Candidates + persona attacks → simplest correct. |
 | `adversarial-gate` | Pre-merge review. Run the adversarial gate on a PR or branch. |
-| `use-the-loop` | The meta-router. The user wants you to figure out which loop fits, possibly chaining. |
+| `reproduce-and-fix` | Minimal repro → failing test → fix → prove green. |
+| `migrate` | Version/framework upgrade with checklist and rollback. |
+| `explain-codebase` | Onboarding map for an unfamiliar repo. |
+| `swarm` | Mega-loop. Full beginning-to-end ship pipeline for the task. |
+| `use-the-loop` | Meta-router. Smallest composition that fits; may chain 2. |
+
+### Conductor roles
+
+| Loop | Role |
+|---|---|
+| `dispatcher` | Classify intent → one loop. |
+| `use-the-loop` | Meta: smallest composition / maybe chain 2. |
+| `swarm` | Mega: full beginning-to-end pipeline. |
+
+## Personas
+
+Review lenses under `personas/` (skeptic, security-auditor, simplicity-advocate, perf-critic, regression-hunter, edge-case-analyst, a11y-advocate, api-contract-guardian, dx-critic). Used inside `sar` and `adversarial-gate`. Not dispatcher options — see `personas/README.md`.
 
 ## Adding a new loop
 
 ```bash
-mkdir -p .loops/loops/<name>
-# write .loops/loops/<name>/loop.md
-# write .loops/loops/<name>/loop.yaml
-node .loops/adapters/emit.js <name>
-```
-
-Both agents pick it up.
-
-## Updating loops
-
-```bash
-cd .loops
-git pull
-node adapters/emit.js
+mkdir -p loops/<name>          # in the loops repo (or .loops/loops/<name> per-project)
+# write loops/<name>/loop.md
+# write loops/<name>/loop.yaml
+node adapters/emit.js <name>
+node adapters/install-global.js   # if using global install
 ```
 
 ## Design principles
@@ -86,4 +156,4 @@ node adapters/emit.js
 
 ## Status
 
-v0.1.0 — proof of concept. `plan-and-implement` ported end-to-end. Four more loops to port (`tdd`, `sar`, `adversarial-gate`, `use-the-loop`).
+v0.1.0 — catalog expanded. Flagships (`plan-and-implement`, `tdd`, `sar`, `adversarial-gate`, `use-the-loop`), plus `reproduce-and-fix`, `migrate`, `explain-codebase`, and mega-loop `swarm`. Personas catalog in `personas/`. Global Cursor install via `adapters/install-global.js`.

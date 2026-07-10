@@ -1,0 +1,38 @@
+name: sar
+version: 0.1.0
+description: |
+  Spec → Attack → Repair. Produce candidate solutions, attack them against
+  a written spec with rotating personas, repair failures, and judge the
+  simplest correct winner.
+phases:
+  - name: spec
+    goal: Write a short attackable spec with falsifiable acceptance checks.
+    exit_condition: Acceptance checks are specific enough for clear pass/fail.
+  - name: candidates
+    goal: Produce 2–3 meaningfully different candidate approaches.
+    exit_condition: At least two distinct candidates exist.
+  - name: attack
+    goal: Attack each candidate with rotating personas; score findings.
+    exit_condition: Every candidate has a scored attack log.
+  - name: repair
+    goal: Fix Critical (and decided Important) findings on survivors.
+    exit_condition: No open Critical findings on surviving candidates.
+  - name: judge
+    goal: Pick the simplest correct survivor with a short rationale.
+    exit_condition: One winner named.
+  - name: handoff
+    goal: Report winner, rejects, residual risks, next step.
+    exit_condition: Handoff message sent.
+triggers:
+  - "sar"
+  - "spec attack repair"
+  - "simplest correct"
+  - "stress-test"
+  - "find holes"
+  - "attack this design"
+personas:
+  spec: skeptic
+  attack: [security-auditor, simplicity-advocate, perf-critic]
+  judge: simplicity-advocate
+consumes: [intent]
+produces: [spec, candidates, judgment, handoff]

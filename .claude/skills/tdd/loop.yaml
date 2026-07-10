@@ -1,0 +1,28 @@
+name: tdd
+version: 0.1.0
+description: |
+  Test-driven development. Write a failing test that names the desired
+  behavior, make it pass with the smallest change, then refactor under a
+  green suite.
+phases:
+  - name: red
+    goal: Write a failing test that asserts the desired behavior and fails for the right reason.
+    exit_condition: Test run fails with a clear assertion/missing-behavior message.
+  - name: green
+    goal: Implement the smallest honest change that makes the test pass.
+    exit_condition: New tests green; local related suite still passes.
+  - name: refactor
+    goal: Clean up without changing behavior; re-run tests after cleanup.
+    exit_condition: Suite still green; code is as simple as the behavior allows.
+  - name: handoff
+    goal: Report what tests lock in, what was run, what's left.
+    exit_condition: Handoff message sent.
+triggers:
+  - "test"
+  - "TDD"
+  - "write tests"
+  - "cover"
+  - "lock in behavior"
+  - "test-driven"
+consumes: [intent]
+produces: [tests, code, handoff]

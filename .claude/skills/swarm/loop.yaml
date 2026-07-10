@@ -1,0 +1,24 @@
+name: swarm
+version: 0.1.0
+description: |
+  Mega-loop. Full beginning-to-end ship pipeline for a non-trivial task.
+  Announces a chain once, then runs each stage sequentially. More aggressive
+  than use-the-loop (which picks the smallest composition).
+phases:
+  - name: classify
+    goal: Classify task shape and select the matching full chain.
+    exit_condition: Chain announced; user had a beat to interrupt.
+  - name: execute
+    goal: Run each stage fully with one-line progress between stages.
+    exit_condition: All stages complete or explicitly re-chained after a shape change.
+  - name: handoff
+    goal: Summarize chain, verification, residual risk.
+    exit_condition: Handoff message sent.
+triggers:
+  - "swarm"
+  - "swarm this"
+  - "swarm a task"
+  - "run the swarm"
+  - "full pipeline"
+consumes: [intent]
+produces: [composition, code, handoff]

@@ -1,0 +1,28 @@
+name: adversarial-gate
+version: 0.1.0
+description: |
+  Pre-merge / PR review gate. Attack an existing artifact with rotating
+  personas, apply a fix budget, and return APPROVE, FIX REQUIRED, or BLOCK.
+  Single-model friendly.
+phases:
+  - name: scope
+    goal: Identify the exact artifact, intent, and non-goals.
+    exit_condition: Artifact identity and intent are explicit.
+  - name: attack
+    goal: Run up to 3 persona rounds with scored findings and a fix budget.
+    exit_condition: Rounds complete or escalated; Criticals addressed or blocking.
+  - name: verdict
+    goal: Emit APPROVE / FIX REQUIRED / BLOCK with counts and summary.
+    exit_condition: Verdict matches scores; user can act on it.
+triggers:
+  - "review this PR"
+  - "pre-merge"
+  - "gate"
+  - "before I merge"
+  - "adversarial gate"
+  - "review this diff"
+personas:
+  rounds: [security-auditor, regression-hunter, edge-case-analyst]
+  optional: [a11y-advocate, api-contract-guardian, dx-critic, perf-critic, simplicity-advocate]
+consumes: [artifact, intent]
+produces: [findings, verdict, handoff]

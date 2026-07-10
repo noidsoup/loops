@@ -1,0 +1,74 @@
+---
+description: How loops works globally on this machine. Always apply.
+alwaysApply: true
+---
+
+# loops is available globally
+
+This machine has `loops` installed for **all Cursor projects**. Canonical definitions live at `~/.loops` (symlink to the loops repo). You do **not** need a per-project `.loops/` clone.
+
+When the user says "use the loops" or asks for help on a task that fits a known loop, route through the dispatcher.
+
+## Resolve the loops root
+
+Prefer, in order:
+
+1. **Project-local** `.loops/` if it exists in the current workspace (per-project install wins for that project).
+2. **`~/.loops`** (global install symlink).
+3. Absolute path from `readlink ~/.loops` if tilde expansion is unreliable.
+
+Below, `LOOPS_ROOT` means that resolved path.
+
+## What to do
+
+1. **When the user says "use the loops"** (or anything equivalent — "loops?", "pick a loop", "which loop should I use"), read `LOOPS_ROOT/dispatcher/loop.md` and follow it. It classifies the request and loads the right loop.
+
+2. **When the user makes a request that maps to a known loop** (building a feature, writing tests, reviewing a PR, stress-testing a design, reproducing a bug, migrating, explaining the codebase, swarming a full pipeline), you can short-circuit: read `LOOPS_ROOT/loops/<name>/loop.md` directly and follow it.
+
+3. **When the user names a loop explicitly** ("run plan-and-implement", "do tdd on this", "swarm this"), read that loop's `loop.md` and follow it.
+
+4. **If you're not sure**, run the dispatcher. Explicit "swarm" keywords route to `swarm`, not `use-the-loop`.
+
+## Available loops (in `LOOPS_ROOT/loops/`)
+
+- `plan-and-implement` — Spec-then-implement for new features, refactors, non-trivial changes.
+- `tdd` — Test-driven development. Lock in behavior with a test suite.
+- `sar` — Spec → Attack → Repair. Adversarial review of candidates.
+- `adversarial-gate` — Pre-merge review for a PR or branch.
+- `reproduce-and-fix` — Minimal repro → failing test → fix → prove green.
+- `migrate` — Version/framework upgrade with checklist and rollback.
+- `explain-codebase` — Onboarding map for an unfamiliar repo.
+- `swarm` — Mega-loop. Full beginning-to-end ship pipeline.
+- `use-the-loop` — Meta-router. Smallest composition; open-ended tasks.
+
+Personas under `LOOPS_ROOT/personas/` are review lenses for `sar` / `adversarial-gate`, not top-level loops.
+
+## Cursor discovery helpers (optional)
+
+Global install also links emitted files under:
+
+- `~/.cursor/rules/loops-*.mdc` — agent-requestable rules
+- `~/.cursor/skills/loops-*/` — skills (namespaced `loops-` so they do not collide with other skills)
+
+Prefer reading canonical `LOOPS_ROOT/**/loop.md` when running a loop. The emitted files are discovery aids.
+
+## What NOT to do
+
+- Don't read loop files just to "understand the project." Only load them when the user has triggered a loop.
+- Don't invent new loops. If nothing fits, route to `use-the-loop`.
+- Don't run loops without following the phases. Each loop's `loop.md` defines its own contract.
+- Don't treat personas as dispatcher options.
+- Don't overwrite unrelated skills in `~/.cursor/skills/` (Hermes / other packs). Loops skills are always `loops-*`.
+
+## Re-emitting and refreshing the global install
+
+After editing canonical `loop.md` files in the loops repo:
+
+```bash
+cd LOOPS_ROOT   # e.g. ~/.loops or the cloned repo
+git pull        # if tracking upstream
+node adapters/emit.js
+node adapters/install-global.js
+```
+
+`install-global.js` re-links skills/rules and refreshes this awareness rule.

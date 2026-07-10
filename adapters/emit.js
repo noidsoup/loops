@@ -67,7 +67,8 @@ function emitClaudeSkill(loopName, canonicalDir) {
 
 function extractDescription(yamlText) {
   if (!yamlText) return null;
-  const m = yamlText.match(/^description:\s*\|?\s*\n((?:\s{4,}.+\n?)+)/m);
+  // Accept 2+ spaces of indent (YAML block scalars often use 2 spaces).
+  const m = yamlText.match(/^description:\s*\|?\s*\n((?:\s{2,}.+\n?)+)/m);
   if (m) return m[1].trim().split('\n')[0];
   const m2 = yamlText.match(/^description:\s*(.+)$/m);
   return m2 ? m2[1].trim().replace(/^['"]|['"]$/g, '') : null;

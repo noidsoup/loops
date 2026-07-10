@@ -1,6 +1,6 @@
 ---
 name: plan-and-implement
-description: |
+description: Spec-then-implement for non-trivial features, refactors, or changes.
 ---
 # plan-and-implement
 

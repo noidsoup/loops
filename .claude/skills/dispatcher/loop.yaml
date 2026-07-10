@@ -14,8 +14,14 @@ classification:
     - tdd
     - sar
     - adversarial-gate
+    - reproduce-and-fix
+    - migrate
+    - explain-codebase
+    - swarm
     - use-the-loop
   method: llm-intent-classification
   fallback: use-the-loop
+  priority_keywords:
+    swarm: [swarm, "swarm this", "run the swarm", "full pipeline"]
 consumes: []
 produces: [dispatch]
