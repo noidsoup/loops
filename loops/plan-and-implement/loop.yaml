@@ -1,0 +1,28 @@
+name: plan-and-implement
+version: 0.1.0
+description: |
+  Spec-then-implement for non-trivial features, refactors, or changes.
+  Writes a short spec, gets implicit approval, implements in small verifiable
+  steps, hands off with a summary of what changed and what was verified.
+phases:
+  - name: spec
+    goal: Produce a tight specification covering goal, non-goals, user-visible behavior, constraints, approach, open questions.
+    exit_condition: Spec is on the page, ≤ one screen, has open questions called out.
+  - name: confirm
+    goal: Surface the spec to the user. Resolve real ambiguities. Proceed unless interrupted.
+    exit_condition: User has had a beat to react, ambiguities resolved, proceed signaled.
+  - name: implement
+    goal: Build it in small reviewable steps, verify as you go, surface decisions.
+    exit_condition: All spec items complete, project verification commands pass.
+  - name: handoff
+    goal: Tell the user what changed, what was verified, what's left.
+    exit_condition: Handoff message sent.
+triggers:
+  - "build"
+  - "implement"
+  - "add a feature"
+  - "new feature"
+  - "refactor"
+  - "let's add"
+consumes: [intent]
+produces: [code, spec, handoff]

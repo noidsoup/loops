@@ -1,0 +1,42 @@
+---
+description: How loops works in this project. Always apply.
+alwaysApply: true
+---
+
+# loops is installed in this project
+
+This project has `loops` installed at `.loops/`. Loops are portable workflow definitions that work in Cursor and Claude Code. When the user says "use the loops" or asks for help on a task, route through the dispatcher.
+
+## What to do
+
+1. **When the user says "use the loops"** (or anything equivalent — "loops?", "pick a loop", "which loop should I use"), read `.loops/dispatcher/loop.md` and follow it. It will tell you how to classify the request and load the right loop.
+
+2. **When the user makes a request that maps to a known loop** (building a feature, writing tests, reviewing a PR, stress-testing a design, running the adversarial gate), you can short-circuit the dispatcher: read the appropriate `.loops/loops/<name>/loop.md` directly and follow it.
+
+3. **When the user names a loop explicitly** ("run plan-and-implement", "do tdd on this"), read that loop's `loop.md` and follow it.
+
+4. **If you're not sure** whether a request fits a loop, run the dispatcher. It will either pick one or route to `use-the-loop` which handles ambiguous cases.
+
+## Available loops (in `.loops/loops/`)
+
+- `plan-and-implement` — Spec-then-implement for new features, refactors, non-trivial changes.
+- `tdd` — Test-driven development. Lock in behavior with a test suite.
+- `sar` — Spec → Attack → Repair. Adversarial review.
+- `adversarial-gate` — Pre-merge review for a PR or branch.
+- `use-the-loop` — Meta-router. Open-ended tasks that don't map cleanly to one loop.
+
+## What NOT to do
+
+- Don't read `.loops/loop.md` files just to "understand the project." Only load them when the user has triggered a loop.
+- Don't invent new loops. If nothing fits, route to `use-the-loop`.
+- Don't run loops without following the phases. Each loop's `loop.md` defines its own contract.
+
+## Re-emitting adapter files
+
+If the user edits a canonical `loop.md` in `.loops/`, run:
+
+```bash
+node .loops/adapters/emit.js
+```
+
+This regenerates `.cursor/rules/*.mdc` and `.claude/skills/*/SKILL.md` from the canonical source. Do this automatically when you notice the canonical files have been edited.

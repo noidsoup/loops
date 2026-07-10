@@ -1,0 +1,21 @@
+name: dispatcher
+version: 0.1.0
+description: |
+  Meta-loop. The entry point. Reads user intent, classifies it against the
+  available loops, and dispatches to the right one. Never executes a task
+  directly — only routes.
+triggers:
+  - "use the loops"
+  - "loops?"
+  - "which loop"
+classification:
+  options:
+    - plan-and-implement
+    - tdd
+    - sar
+    - adversarial-gate
+    - use-the-loop
+  method: llm-intent-classification
+  fallback: use-the-loop
+consumes: []
+produces: [dispatch]
