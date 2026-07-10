@@ -249,6 +249,53 @@ function installCursorAwareness() {
   return { status: 'ok', dest, src: 'INSTALL-GLOBAL.mdc (rendered)', mode: 'write', kind: 'awareness' };
 }
 
+function installResolutionRule() {
+  // Ships INSTALL-RESOLUTION.mdc into both Cursor and Claude rules dirs.
+  // Tells the agent: when loops-* and Hermes built-in both match, prefer loops-*.
+  const src = path.join(REPO, 'INSTALL-RESOLUTION.mdc');
+  if (!fs.existsSync(src)) return [{ status: 'missing', src }];
+
+  const results = [];
+  const cursorName = 'loops-resolution.mdc';
+  const claudeName = 'loops-resolution.md';
+
+  // Cursor: keep frontmatter (alwaysApply)
+  if (DO_CURSOR) {
+    const dest = path.join(CURSOR_RULES, cursorName);
+    results.push({ ...linkOrCopy(src, dest, { forceManaged: true }), kind: 'resolution-cursor' });
+  }
+
+  // Claude: strip frontmatter (Claude has no alwaysApply flag)
+  if (DO_CLAUDE) {
+    const dest = path.join(CLAUDE_RULES, claudeName);
+    let body = fs.readFileSync(src, 'utf8');
+    body = body.replace(/^---\n[\s\S]*?\n---\n*/, '');
+    ensureDir(path.dirname(dest));
+    if (fs.existsSync(dest) || isSymlink(dest)) {
+      if (isSymlink(dest) && isManagedTarget(dest, src)) {
+        // existing loops-managed symlink — safe to refresh
+        fs.rmSync(dest, { force: true });
+      } else if (fs.existsSync(dest) && !isSymlink(dest)) {
+        // existing real file (possibly from a prior manual `cp`)
+        const existing = fs.readFileSync(dest, 'utf8');
+        if (!existing.includes('Loop pack disambiguation') && !existing.includes('loops-resolution')) {
+          results.push({ status: 'skipped-collision', dest, src, mode: 'write' });
+          return results;
+        }
+        // looks like ours from a prior install — overwrite
+        fs.rmSync(dest, { force: true });
+      } else {
+        results.push({ status: 'skipped-collision', dest, src, mode: 'write' });
+        return results;
+      }
+    }
+    fs.writeFileSync(dest, body);
+    results.push({ status: 'ok', dest, src, mode: 'write', kind: 'resolution-claude' });
+  }
+
+  return results;
+}
+
 function installClaudeAwareness() {
   ensureDir(CLAUDE_RULES);
   const dest = path.join(CLAUDE_RULES, CLAUDE_AWARENESS);
@@ -635,6 +682,9 @@ function main() {
     results.push(installClaudeAwareness());
     results.push(...installClaudeSkills());
   }
+
+  // Disambiguation rule: prefer loops-* when both loops-* and Hermes built-in match.
+  results.push(...installResolutionRule());
 
   const collisions = results.filter((r) => r.status === 'skipped-collision');
   const missing = results.filter((r) => r.status === 'missing');

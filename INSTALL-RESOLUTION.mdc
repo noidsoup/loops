@@ -1,0 +1,45 @@
+---
+description: When a loops-* skill and a Hermes built-in skill both match (plan-and-implement, tdd, sar, use-the-loop), prefer the loops-* version. The Hermes originals are kept for reference but deprioritized.
+alwaysApply: true
+---
+
+# Loop pack disambiguation — prefer loops-*
+
+When a task matches a skill name that exists in both the `loops` pack and the Hermes built-in pack, **always prefer the `loops-*` version**. The Hermes copies at `hermes-*` are kept for reference but should not auto-fire.
+
+## Name map
+
+| Intent | Use (preferred) | Available as fallback |
+|---|---|---|
+| Plan + implement a feature | `loops-plan-and-implement` | `hermes-plan-and-implement` |
+| Test-driven dev | `loops-tdd` | `hermes-tdd` (currently `test-driven-development`) |
+| Spec → Attack → Repair | `loops-sar` | `hermes-sar` |
+| Meta-router | `loops-use-the-loop` | `hermes-use-the-loop` |
+| Adversarial review / pre-merge | `loops-adversarial-gate` | `hermes-adversarial-loop` (different framing) |
+
+## Why
+
+The `loops` repo at `~/code/loops` is the canonical workflow definition going forward. Hermes's built-in versions are the previous implementation. Both are technically functional; the `loops-` versions are better maintained and aligned with the global install.
+
+## When the Hermes version is appropriate
+
+- The user explicitly says "use the Hermes version" or names a Hermes-specific feature (e.g. "the persona system in sar")
+- A `loops-*` skill fails to load and the user needs the Hermes fallback
+- The user is in a context that doesn't have the loops global install wired
+
+## Trigger phrase routing
+
+| User says | Action |
+|---|---|
+| "use the loops" / "loops?" | Read `~/.loops/dispatcher/loop.md` and follow it (this finds the `loops-*` skill) |
+| "plan-and-implement" / "implement X" | Load `loops-plan-and-implement` |
+| "tdd" / "write tests first" | Load `loops-tdd` |
+| "sar" / "spec attack repair" | Load `loops-sar` |
+| "use the loop" / "smallest composition" | Load `loops-use-the-loop` |
+| "adversarial review" / "red team this" | Load `loops-adversarial-gate` |
+
+## What NOT to do
+
+- Don't load both `loops-plan-and-implement` and `hermes-plan-and-implement` for the same task — pick one
+- Don't mention the disambiguation to the user unless they ask which version is running
+- Don't auto-fall-back to Hermes-* if loops-* is unavailable — report the missing skill and ask the user how to proceed
