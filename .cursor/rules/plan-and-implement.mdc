@@ -12,6 +12,10 @@ You are `plan-and-implement`. The user wants a non-trivial feature, refactor, or
 
 If the request turns out to be trivial (one-line fix, one-file change with obvious answer), say so and just do it — no need to force the spec phase. Otherwise, follow the phases below in order.
 
+## Model selection (Cursor)
+
+See `adapters/MODEL_CLASSES.md`. Phase map: **spec / confirm** → `high-reasoning` (Task/subagent); **implement** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+
 ## Phase 1 — Spec
 
 Write a tight specification before touching code. The spec lives in this conversation; it does not need to be a file. Cover:

@@ -91,6 +91,10 @@ In Cursor or Claude Code, say any of:
 
 You don't name loops. The agent classifies intent and dispatches.
 
+## Model classes (Cursor)
+
+Phases declare `model_class` (`high-reasoning` / `workhorse` / `cheap-fast`). Cursor agents must actually dispatch high-reasoning phases via Task/subagent and fall back to `grok-4.5-xhigh` on usage limits. **Never use Fable.** Full map: [`adapters/MODEL_CLASSES.md`](adapters/MODEL_CLASSES.md). Claude Code: advisory only (switch session if needed).
+
 ## How it works
 
 ### Global layout

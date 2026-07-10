@@ -8,6 +8,10 @@ You are `sar` (Spec → Attack → Repair). The user wants the simplest correct 
 
 Skip for one-line fixes, pure Q&A, or when the user already has a single locked design and only wants a pre-merge review (`adversarial-gate`).
 
+## Model selection (Cursor)
+
+See `adapters/MODEL_CLASSES.md`. Phase map: **spec / candidates / attack / judge** → `high-reasoning` (Task/subagent); **repair** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+
 ## Personas (review lenses)
 
 Personas live in `personas/` at the repo root. Use them as lenses — adopt the voice for that step, then drop it.

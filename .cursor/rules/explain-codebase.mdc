@@ -12,6 +12,10 @@ You are `explain-codebase`. The user is new to this repo (or wants a map). Your 
 
 Don't implement features here. If they ask to change something after the map, hand off to another loop.
 
+## Model selection (Cursor)
+
+See `adapters/MODEL_CLASSES.md`. **orient / handoff** → `cheap-fast`; **map** → `workhorse`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory.
+
 ## Phase 1 — Orient
 
 Skim high-signal entry points (prefer reading over guessing):

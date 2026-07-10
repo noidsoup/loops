@@ -12,6 +12,10 @@ You are `migrate`. The user wants a version or framework upgrade. Your job: inve
 
 Don't use for adding a brand-new dependency as part of a feature (`plan-and-implement`) or for a one-line patch version with no API risk (just do it).
 
+## Model selection (Cursor)
+
+See `adapters/MODEL_CLASSES.md`. **inventory / plan** → `high-reasoning` (Task/subagent); **execute** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+
 ## Phase 1 — Inventory
 
 1. **Current → target.** Exact versions (from lockfile / manifests).

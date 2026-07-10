@@ -6,12 +6,17 @@ description: |
   Single-model friendly.
 phases:
   - name: scope
+    model_class: workhorse
     goal: Identify the exact artifact, intent, and non-goals.
     exit_condition: Artifact identity and intent are explicit.
   - name: attack
+    model_class: high-reasoning
+    # Within this phase: persona attack rounds = high-reasoning;
+    # applying the fix budget = workhorse (see loop.md Model selection).
     goal: Run up to 3 persona rounds with scored findings and a fix budget.
     exit_condition: Rounds complete or escalated; Criticals addressed or blocking.
   - name: verdict
+    model_class: high-reasoning
     goal: Emit APPROVE / FIX REQUIRED / BLOCK with counts and summary.
     exit_condition: Verdict matches scores; user can act on it.
 triggers:

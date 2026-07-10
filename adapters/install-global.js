@@ -199,6 +199,7 @@ function buildAwarenessBody({ forClaude }) {
       '- There is no Cursor-style `alwaysApply` flag; this file under `~/.claude/rules/` is the user-level always-on hook.',
       '- Skills are discovered from `~/.claude/skills/loops-*/`. Prefer `/loops-dispatcher` or say "use the loops".',
       '- Claude follows symlinks for skill directories; supporting files may be symlinked from `~/.loops`.',
+      '- **Model classes are advisory** on Claude Code (often cannot switch mid-session). Prefer a high-reasoning session or a second session for `high-reasoning` phases when possible; otherwise continue best-effort. Never use Fable. See `adapters/MODEL_CLASSES.md`.',
       ''
     );
   }

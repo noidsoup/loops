@@ -43,13 +43,17 @@ Read the user's request. Look for the strongest signal in this order:
 
 4. **Ambiguity.** If the request is open-ended, multi-stage without "swarm", or the user explicitly says "use the loops," route to `use-the-loop` and let it decide. If they asked for the full pipeline, route to `swarm`.
 
+## Model selection
+
+Classification stays on the **current session model** — do not spawn a subagent just to classify. After dispatch, the **chosen loop** owns `model_class` behavior for its phases (see `adapters/MODEL_CLASSES.md`). Never recommend Fable.
+
 ## How to dispatch
 
 Once you've picked a loop:
 
 1. **Load the loop file.** Read `loops/<name>/loop.md` from this repo.
 2. **Hand off cleanly.** Tell the user in one sentence which loop you picked and why, then start executing it. Example: *"Picking `sar` — you asked for a stress-test, so I'll spec this, attack it, and repair the holes."*
-3. **Never half-execute.** If you picked a loop, fully commit. Don't re-evaluate halfway through. Loops have their own internal decision-making.
+3. **Never half-execute.** If you picked a loop, fully commit. Don't re-evaluate halfway through. Loops have their own internal decision-making (including Cursor model-class dispatch).
 
 ## What you do NOT do
 

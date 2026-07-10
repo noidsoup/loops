@@ -6,12 +6,15 @@ description: |
   than use-the-loop (which picks the smallest composition).
 phases:
   - name: classify
+    model_class: high-reasoning
     goal: Classify task shape and select the matching full chain.
     exit_condition: Chain announced; user had a beat to interrupt.
   - name: execute
-    goal: Run each stage fully with one-line progress between stages.
+    model_class: workhorse
+    goal: Run each stage fully with one-line progress between stages. Nested stages follow that loop’s model_class map.
     exit_condition: All stages complete or explicitly re-chained after a shape change.
   - name: handoff
+    model_class: cheap-fast
     goal: Summarize chain, verification, residual risk.
     exit_condition: Handoff message sent.
 triggers:

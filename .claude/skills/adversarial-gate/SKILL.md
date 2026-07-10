@@ -12,6 +12,10 @@ You are `adversarial-gate`. The user wants a pre-merge / PR review gate before s
 
 Don't use for greenfield design exploration (`sar`) or building from scratch (`plan-and-implement`). Don't use for trivial typos.
 
+## Model selection (Cursor)
+
+See `adapters/MODEL_CLASSES.md`. Phase map: **scope** → `workhorse`; **attack** (persona rounds) → `high-reasoning` via Task/subagent; **applying the fix budget** inside attack → `workhorse`; **verdict** → `high-reasoning`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+
 ## Personas (review lenses)
 
 Personas live in `personas/`. Rotate across rounds so you don't rubber-stamp your own work.

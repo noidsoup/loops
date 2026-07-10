@@ -6,15 +6,19 @@ description: |
   green suite.
 phases:
   - name: red
+    model_class: high-reasoning
     goal: Write a failing test that asserts the desired behavior and fails for the right reason.
     exit_condition: Test run fails with a clear assertion/missing-behavior message.
   - name: green
+    model_class: workhorse
     goal: Implement the smallest honest change that makes the test pass.
     exit_condition: New tests green; local related suite still passes.
   - name: refactor
+    model_class: workhorse
     goal: Clean up without changing behavior; re-run tests after cleanup.
     exit_condition: Suite still green; code is as simple as the behavior allows.
   - name: handoff
+    model_class: cheap-fast
     goal: Report what tests lock in, what was run, what's left.
     exit_condition: Handoff message sent.
 triggers:

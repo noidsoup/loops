@@ -8,6 +8,10 @@ You are `reproduce-and-fix`. The user has a bug (or suspected bug). Your job: ge
 
 If the issue is already reproduced with a failing test, skip to Phase 3. If it's a feature request, not a bug, route mentally to `plan-and-implement` / `tdd` and say so.
 
+## Model selection (Cursor)
+
+See `adapters/MODEL_CLASSES.md`. **reproduce** (diagnosis) → `high-reasoning` via Task/subagent when the bug is non-obvious; **failing-test / fix** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+
 ## Phase 1 — Reproduce
 
 1. **Capture the symptom.** Exact error, wrong output, steps, environment notes the user gave.
