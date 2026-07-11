@@ -6,25 +6,44 @@ Shared map for phase-level `model_class` on each loop. Canonical preference orde
 
 ## Class → model table (Cursor)
 
-**Different models for different classes.** Cursor exposes one slug per model (no `*-thinking-high` or `*-fast` slug variants in the picker or API). Reasoning effort is implicit in which model you pick, not a parameter. The current canonical Cursor model list is at <https://cursor.com/docs/models> — the table below is verified against that page.
+**Two usage pools.** Cursor splits models into two pools per <https://cursor.com/docs/models-and-pricing>:
 
-**`composer-*-fast` is banned** (future-proofing): if Cursor ever ships a `composer-2.5-fast` or any other `*-fast` variant, never route to it. The same rule applies to any `*-fast` variant from any vendor. Today no such variant exists, but the ban is preserved so a future Cursor release doesn't catch loops off-guard.
+- **First-party models pool** — "Significantly more included usage with **Auto, Composer 2.5, and Grok 4.5**." Auto is a meta-router that selects among the first-party models to balance intelligence, cost, and reliability. All workhorse / cheap-fast work and most high-reasoning work should run on this pool.
+- **API pool** — Charged at the model's API rate. This is where the third-party models live (Claude, GPT, Gemini Pro). Use only when the task truly needs a specific third-party model's strengths, or when the first-party pool is exhausted.
 
-| Class | Primary model | Fallback (if primary unavailable) | Notes |
+**Default to Auto for everything.** Auto is the canonical Cursor default: it draws from the first-party pool (cheap, included with the plan) and routes intelligently. Only override Auto to a specific model when you have a reason.
+
+**`Composer 2.5 (Fast)` is banned.** It exists (see the pricing table) but costs **6× more per input token** than regular Composer 2.5 ($3 vs $0.50 per 1M) and **6× more per output token** ($15 vs $2.50). Same ban applies to any other `*-fast` variant from any vendor.
+
+**`Grok 4.5 (Fast)` is also banned** ($4/$18 per 1M — 2× the regular Grok 4.5). Cursor's "fast" variants are an anti-pattern: they cost more, not less, than the regular model. The ban covers all of them.
+
+| Class | Default (Auto) | Explicit override (when needed) | Pool used |
 |---|---|---|---|
-| `high-reasoning` | `Claude Opus 4.8` | `Grok 4.5` (use when Opus usage is up) | 300k context, 1M in Max Mode. The strongest available non-Fable model in Cursor. |
-| `workhorse` | `Grok 4.5` | `Composer 2.5` (Cursor's in-house, use when Grok usage is up) | 256k context. The Cursor × SpaceXAI partnership model. |
-| `cheap-fast` | `Composer 2.5` | `Gemini 3.5 Flash` (use when Composer usage is up) | 200k context. Cursor's in-house agentic model; fastest, cheapest Cursor-side option. |
+| `high-reasoning` | `Auto` (will pick from Composer 2.5 / Grok 4.5) | `Claude Opus 4.8` (API pool) or `Gemini 3.1 Pro` (API pool) | First-party; API only if user opts in |
+| `workhorse` | `Auto` | — (let Auto pick) | First-party |
+| `cheap-fast` | `Auto` | — (let Auto pick) | First-party |
 
-**Fable ban:** `Claude Fable 5` exists in Cursor but is **never** routed to by loops — same ban as on Nous Portal. If a `high-reasoning` phase's only "available" model is Fable, the agent must fall back to `Grok 4.5`, not use Fable.
+**Why Auto instead of hand-coded fallbacks:** Auto's router reacts to real-time first-party pool state. If Composer 2.5 hits a usage cap but Grok 4.5 has headroom, Auto uses Grok — without loops having to model the swap. The hand-coded "primary → fallback" chain I had before can't react to live pool state and double-counts the same model across classes.
+
+**Fable ban:** `Claude Fable 5` is API-pool only ($10/$50 per 1M — the most expensive Cursor model), so Auto will never pick it. Loops never selects Fable explicitly either. If a phase is asked to use Fable, refuse and route to Auto or Claude Opus 4.8.
+
+### Override rules (when to leave Auto)
+
+Override Auto → specific model **only** when the task meets one of these criteria:
+
+1. **High-reasoning + needs deepest reasoning:** dispatch to `Claude Opus 4.8` via Task/subagent. Costs API pool. The user sees spend in real time on the usage dashboard.
+2. **High-reasoning + Google knowledge work:** `Gemini 3.1 Pro` via Task/subagent. Same API-pool cost warning.
+3. **Any other reason (saving, Fable ban enforcement, etc.):** stay on Auto.
+
+Never override Auto to `Claude Fable 5` for any reason. Never override Auto to `Composer 2.5 (Fast)` or `Grok 4.5 (Fast)` for any reason.
 
 ### Cross-vendor fallback (last resort)
 
-When the entire Cursor chain above is exhausted (quota, rate-limit, "model not available"), the last-resort fallback is **off Cursor**:
+When the entire first-party pool is exhausted (Auto errors out, both Composer 2.5 and Grok 4.5 at quota) AND no API pool is available (no third-party model selected, or user has chosen to stay on first-party), the last-resort fallback is **off Cursor**:
 
 | Class | Cross-vendor fallback |
 |---|---|
-| `high-reasoning` | `claude-opus-4-8-thinking-high` via Nous Portal (~$0.10/phase) — see Hermes section. |
+| `high-reasoning` | `claude-opus-4-8` via Nous Portal (~$0.10/phase) — see Hermes section. |
 | `workhorse` | `claude-sonnet-5` via Nous Portal (~$0.04/phase). |
 | `cheap-fast` | `minimax/minimax-m3` via Nous Portal (free, always on). |
 
@@ -35,13 +54,13 @@ If a phase is in a project running on Claude Code, the "cross-vendor fallback" s
 When running a loop **in Cursor**, for each phase:
 
 1. Read that phase’s `model_class` from `loop.yaml` (or the loop's Model selection section).
-2. Resolve the primary slug from the table above.
-3. **`high-reasoning`:** Prefer dispatching the phase via **Task / subagent** with `model: "Claude Opus 4.8"`. If the primary is unavailable (usage up, rate-limited, "model not available"), fall back to `Grok 4.5`, then cross-vendor. Never block the loop.
-4. **`workhorse`:** Implement in the main agent, or a workhorse subagent with `model: "Grok 4.5"`. Fallback to `Composer 2.5` if Grok usage is up; cross-vendor if both unavailable.
-5. **`cheap-fast`:** Stay in the main session with `model: "Composer 2.5"`. Fallback to `Gemini 3.5 Flash` if Composer usage is up; cross-vendor if both unavailable.
-6. **Fallback protocol:** If the chosen model fails due to usage limits, quota, "model not available", or similar — **immediately retry the same step** with the class's fallback. Tell the user in **one short line** which model you fell to. Do **not** stall asking permission.
-7. If on last-resort cross-vendor, **continue** — do not loop forever trying banned or unavailable models.
-8. **Never select Fable.** Even if Fable is the only Cursor model with capacity, fall back to Grok 4.5 instead.
+2. **Default: dispatch with `model: "Auto"`.** Let Cursor's first-party router pick the right model for the actual task and current pool state.
+3. **Override to a specific model** only if the override rules above apply. Tell the user in one line when you do this ("Plan phase: dispatched to Claude Opus 4.8 via API pool, ~$0.10 expected"). API-pool selections should always be announced.
+4. **For high-reasoning phases,** prefer dispatching the phase via **Task / subagent** with `model: "Auto"` (or the override). Subagent lets the main session stay on a cheaper context.
+5. **For workhorse / cheap-fast,** stay in the main session with `model: "Auto"`. Don't dispatch subagents for routine work.
+6. **Fallback protocol:** If Auto returns an error or "model not available" for the current phase — **do not retry Auto blindly.** Tell the user in one line ("Auto unavailable; falling back to Nous Portal") and route to the cross-vendor fallback. Do **not** stall asking permission.
+7. **Never select Fable** — even if Fable is the only Cursor model with capacity, stay on Auto or fall off Cursor.
+8. **Never select `*-fast` variants** — Composer 2.5 (Fast) and Grok 4.5 (Fast) are explicitly banned.
 9. **Max Mode:** enable Cursor's Max Mode for high-reasoning phases that need >200k context (most Cursor models support 1M in Max Mode). Do not enable Max Mode for workhorse or cheap-fast — it costs more and doesn't help.
 
 Dispatcher classification may stay on the current session model. After dispatch, the **chosen loop** owns model-class behavior for its phases.
