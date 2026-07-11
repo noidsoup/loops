@@ -299,4 +299,27 @@ function main() {
   console.log('done.');
 }
 
-main();
+module.exports = {
+  REPO,
+  PREFIX,
+  VALID_MODEL_CLASSES,
+  resolveOutRoot,
+  listLoopDirs,
+  readLoopYaml,
+  extractDescription,
+  yamlField,
+  validateLoop,
+  buildCursorContent,
+  buildClaudeSkillMd,
+  writeFile,
+  pathExists,
+  removeLegacyUnprefixed,
+  emitOne,
+  emitAll,
+  checkMode,
+  main,
+};
+
+if (require.main === module) {
+  main();
+}

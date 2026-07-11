@@ -55,7 +55,7 @@ const CLAUDE_ONLY = args.has('--claude-only');
 const DRY_RUN = args.has('--dry-run');
 const HELP = args.has('--help') || args.has('-h');
 
-if (CURSOR_ONLY && CLAUDE_ONLY) {
+if (require.main === module && CURSOR_ONLY && CLAUDE_ONLY) {
   die('use only one of --cursor-only / --claude-only');
 }
 
@@ -395,18 +395,24 @@ function rewriteSkillName(skillMdText, loopName, prefixedName) {
     text = text.replace(/^---\n/, `---\nname: ${prefixedName}\n`);
   }
   // Touch description so Claude's matcher still mentions loops routing.
-  if (!/loops-/i.test(text.slice(0, 400))) {
-    text = text.replace(
-      /^(description:\s*)(.+)$/m,
-      (_, p, rest) => `${p}[loops] ${rest.replace(/^\[loops\]\s*/, '')}`
-    );
-  }
+  // (Was previously gated on the rewritten text not containing "loops-" in
+  // the first 400 chars, but the name rewrite always puts it there — branch
+  // was dead. Always prefix the description when it lacks "loops-".)
+  text = text.replace(
+    /^(description:\s*)(.+)$/m,
+    (_, p, rest) => {
+      if (/loops-/i.test(rest) || /^\[loops\]/i.test(rest)) {
+        return `${p}${rest}`;
+      }
+      return `${p}[loops] ${rest}`;
+    }
+  );
   return text;
 }
 
 function installClaudeSkills() {
   const results = [];
-  ensureDir(CLAUDE_SKILLS);
+  if (!DRY_RUN) ensureDir(CLAUDE_SKILLS);
 
   for (const name of listLoopNames()) {
     const prefixed = `${PREFIX}${name}`;
@@ -700,4 +706,41 @@ function main() {
   console.log('done.');
 }
 
-main();
+module.exports = {
+  REPO,
+  HOME,
+  LOOPS_LINK,
+  CURSOR_RULES,
+  CURSOR_SKILLS,
+  CLAUDE_RULES,
+  CLAUDE_SKILLS,
+  CURSOR_AWARENESS,
+  CLAUDE_AWARENESS,
+  PREFIX,
+  LOOPS_MARKER,
+  ensureDir,
+  isSymlink,
+  readLinkSafe,
+  resolveMaybe,
+  isManagedTarget,
+  linkOrCopy,
+  isManagedClaudeSkillDir,
+  rewriteSkillName,
+  removeIfManaged,
+  buildAwarenessBody,
+  installLoopsSymlink,
+  installCursorAwareness,
+  installClaudeAwareness,
+  installResolutionRule,
+  installCursorRulesAndSkills,
+  installClaudeSkills,
+  listLoopNames,
+  uninstall,
+  printSummary,
+  verify,
+  main,
+};
+
+if (require.main === module) {
+  main();
+}
