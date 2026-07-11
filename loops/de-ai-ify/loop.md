@@ -41,6 +41,38 @@ The most expensive AI failures are not syntax errors or compiler errors — they
 
 A finding is "slop" if removing it makes the code more readable, more correct, or more maintainable without changing what it does. Minimum bar: the change is meaningful and a senior engineer would agree it's an improvement.
 
+### Top 25 by impact (start here)
+
+If you only have time to learn 25 items, learn these. Sorted by actionability × frequency. Full A–S reference below.
+
+1. **A.1 Hallucinated APIs** — invented function/class/flag. Compile error or runtime blowup.
+2. **A.7 Hallucinated paths** — imports from paths that don't exist.
+3. **B.9 Contradicting itself** — `User.id` is UUID in file A, int in file B.
+4. **B.12 Duplicate implementations** — utility already exists, AI made another.
+5. **C.18 God services / utility explosion** — everything accretes to one place.
+6. **D.21 Solves the wrong problem** — asked for X, got Y.
+7. **D.25 Pattern matching instead of reasoning** — saw "auth" → JWT, even when OAuth was required.
+8. **D.27 Cargo-cult algorithm** — `sorted()` on already-sorted data.
+9. **E.27 Code duplication** — 300 lines repeated.
+10. **E.35 TODO debt** — TODOs added by AI, never tracked, never fixed.
+11. **E.37 Commented-out code blocks** — relics from a previous attempt.
+12. **F.36 Trusting client data** — accepts prices from frontend.
+13. **F.38 Logging secrets** — JWTs, passwords, API keys.
+14. **F.41 Missing rate limiting** — unlimited login attempts.
+15. **F.50 Mass assignment** — binds request body to a model with privileged fields.
+16. **G.43 Accidental O(n³)** — nested loops.
+17. **G.53 N+1 disguised as a loop** — ORM `.get()` inside `for` row.
+18. **H.55 Missing negative tests** — only success cases.
+19. **I.65 Fake confidence** — beautiful explanation for wrong code.
+20. **L.1 Self-narration** — "Let me add a function that…".
+21. **L.9 Asks for confirmation when none needed** — "Should I proceed?" mid-flow.
+22. **M.1 Type hints that lie** — `-> int` when the function actually raises.
+23. **P.5 N+1 in ORM** — lazy load in a loop.
+24. **R.4 Status code used wrong** — 200 for an error.
+25. **S.7 Comment contradicts the next line of code** — and the code is right.
+
+### Full reference (A–S)
+
 ### A. Knowledge failures (hallucinations)
 
 1. **Hallucinated APIs.** Invented functions, classes, flags, parameters, return values, events, framework features, CLI commands, environment variables, annotations.
@@ -54,142 +86,139 @@ A finding is "slop" if removing it makes the code more readable, more correct, o
 
 ### B. Context failures
 
-7. **Forgetting earlier requirements.** "Must support Linux" → 50 prompts later, Windows-only code.
-8. **Forgetting business rules.** "Users can own multiple accounts" → later code assumes one.
-9. **Contradicting itself.** `User.id` is `UUID` in file A, `int` in file B.
-10. **Context window overflow.** Large projects exceed available context; AI forgets parts of the codebase.
-11. **Inconsistent naming.** Customer / Client / User / AccountHolder all mean the same thing.
-12. **Duplicate implementations.** Forgets the utility already exists, creates another.
-13. **Parallel implementations.** Three JSON parsers, four auth helpers, five HTTP clients.
-14. **Tonal drift across files.** One file is terse and direct, the next is narrated and apologetic — both by the same AI, in the same session.
-15. **Forgotten file.** Introduced a requirement that needs 4 files; generated 3, never wrote the 4th.
+9. **Forgetting earlier requirements.** "Must support Linux" → 50 prompts later, Windows-only code.
+10. **Forgetting business rules.** "Users can own multiple accounts" → later code assumes one.
+11. **Contradicting itself.** `User.id` is `UUID` in file A, `int` in file B.
+12. **Context window overflow.** Large projects exceed available context; AI forgets parts of the codebase.
+13. **Inconsistent naming.** Customer / Client / User / AccountHolder all mean the same thing.
+14. **Duplicate implementations.** Forgets the utility already exists, creates another.
+15. **Parallel implementations.** Three JSON parsers, four auth helpers, five HTTP clients.
+16. **Tonal drift across files.** One file is terse and direct, the next is narrated and apologetic — both by the same AI, in the same session.
+17. **Forgotten file.** Introduced a requirement that needs 4 files; generated 3, never wrote the 4th.
 
 ### C. Architecture failures
 
-14. **Architectural drift.** MVC → MVC + Service Locator + Event Bus + Globals. No coherent architecture.
-15. **Violating design boundaries.** DB layer knows UI, UI manipulates SQL, business logic in controllers.
-16. **Dependency inversion violations.** Low-level modules control high-level modules.
-17. **Circular architecture.** A → B → C → A.
-18. **God services.** Everything gets added to `UserService`; eventually 20,000 lines.
-19. **Utility explosion.** `utils.py`, `helpers.py`, `helpers2.py`, `common.py`, `misc.py`, `shared.py`.
-20. **Configuration sprawl.** Settings copied everywhere.
-21. **Wrong abstraction layer.** Helper in the domain layer that knows about HTTP. ORM in the controller layer. Persistence logic in the route handler.
-22. **Premature microservice split.** A synchronous in-process function wrapped in a network round-trip "for scalability" with no scale to justify.
+18. **Architectural drift.** MVC → MVC + Service Locator + Event Bus + Globals. No coherent architecture.
+19. **Violating design boundaries.** DB layer knows UI, UI manipulates SQL, business logic in controllers.
+20. **Dependency inversion violations.** Low-level modules control high-level modules.
+21. **Circular architecture.** A → B → C → A.
+22. **Unclear ownership of code.** Everything accretes to one place: god services (`UserService` at 20,000 lines) or utility-explosion modules (`utils.py`, `helpers.py`, `helpers2.py`, `common.py`, `misc.py`, `shared.py`). Same organizational failure, different surface.
+23. **Configuration sprawl.** Settings copied everywhere, including dead feature flags that are permanently enabled but never removed.
+24. **Wrong abstraction layer.** Helper in the domain layer that knows about HTTP. ORM in the controller layer. Persistence logic in the route handler.
+25. **Premature microservice split.** A synchronous in-process function wrapped in a network round-trip "for scalability" with no scale to justify.
 
 ### D. Reasoning failures
 
-21. **Solves the wrong problem.** Asked to optimize runtime, optimizes readability.
-22. **Misunderstands intent.** Implements exactly the prompt, not the requirement.
-23. **Local optimization.** Improves one function, breaks system performance.
-24. **Incorrect abstraction.** Generalizes too early.
-25. **Pattern matching instead of reasoning.** Sees "authentication" → produces JWT, even when OAuth was required.
-26. **Confuses correlation with correctness.** Writes code because it "looks like examples."
-27. **Cargo-cult algorithm.** `sorted()` on already-sorted data. Bubble sort on a 4-element list. Recursive where iterative is obvious.
+26. **Solves the wrong problem.** Asked to optimize runtime, optimizes readability.
+27. **Misunderstands intent.** Implements exactly the prompt, not the requirement.
+28. **Local optimization.** Improves one function, breaks system performance.
+29. **Incorrect abstraction.** Generalizes too early.
+30. **Pattern matching instead of reasoning.** Sees "authentication" → produces JWT, even when OAuth was required.
+31. **Confuses correlation with correctness.** Writes code because it "looks like examples."
+32. **Cargo-cult algorithm.** `sorted()` on already-sorted data. Bubble sort on a 4-element list. Recursive where iterative is obvious.
+33. **Inappropriate data structure.** List lookup in a tight loop where a `set` would be O(1). Dictionary where the keys are sequential integers.
+34. **Off-by-one in edge reasoning.** "Indices up to n" but writes `n + 1`. Inclusive vs. exclusive boundary confused.
 28. **Inappropriate data structure.** List lookup in a tight loop where a `set` would be O(1). Dictionary where the keys are sequential integers.
 29. **Off-by-one in edge reasoning.** "Indices up to n" but writes `n + 1`. Inclusive vs. exclusive boundary confused.
 
 ### E. Maintenance failures
 
-27. **Code duplication.** Repeats 300 lines.
-28. **Hidden duplication.** Copies logic with tiny differences; much harder to maintain.
-29. **Inconsistent refactors.** Renames half the variables, misses the other half.
-30. **Partial migrations.** Migrates 60% of the framework, leaves 40%.
-31. **Zombie code.** Old implementation remains, never removed.
-32. **Dead feature flags.** Feature permanently enabled, flag still exists.
-33. **Version confusion.** Imports v1 and v2 of the same library simultaneously.
-34. **Kept-for-compat code.** A function or class with a comment "kept for backwards compatibility" that has zero callers and no plausible caller.
-35. **TODO/FIXME debt.** TODOs added by AI, never tracked, never fixed. Often left with no owner and no context.
-36. **Inline configuration.** Magic numbers and strings in code that should be named config (`max_retries = 3` deep in business logic).
-37. **Commented-out code blocks.** Relics from a previous attempt at the same problem, sitting next to the new code.
+29. **Code duplication.** Repeats 300 lines.
+30. **Hidden duplication.** Copies logic with tiny differences; much harder to maintain.
+31. **Inconsistent refactors.** Renames half the variables, misses the other half.
+32. **Partial migrations.** Migrates 60% of the framework, leaves 40%.
+33. **Zombie code.** Old implementation remains, never removed.
+34. **Version confusion.** Imports v1 and v2 of the same library simultaneously.
+35. **Kept-for-compat code.** A function or class with a comment "kept for backwards compatibility" that has zero callers and no plausible caller.
+36. **TODO/FIXME debt.** TODOs added by AI, never tracked, never fixed. Often left with no owner and no context.
+37. **Inline configuration.** Magic numbers and strings in code that should be named config (`max_retries = 3` deep in business logic).
+38. **Commented-out code blocks.** Relics from a previous attempt at the same problem, sitting next to the new code.
 
 ### F. Security failures
 
-34. **Missing authorization.** Checks authentication, never checks permissions.
-35. **IDOR.** Allows `/users/17` → `/users/18`.
-36. **Trusting client data.** Accepts prices from frontend.
-37. **Sensitive error messages.** Returns stack trace, DB password, internal path.
-38. **Logging secrets.** JWTs, passwords, OAuth tokens, API keys.
-39. **Insecure defaults.** Debug mode enabled.
-40. **Weak session handling.** Infinite sessions.
-41. **Missing rate limiting.** Unlimited login attempts.
-42. **Missing audit logging.** Sensitive actions leave no record.
-43. **Path traversal.** File ops on user-supplied path without sanitization.
-44. **SSRF.** Server-side request using user input as URL.
-45. **Prototype pollution / insecure deserialization.** `pickle.loads`, `yaml.load` (without `SafeLoader`), untrusted JSON with reviver.
-46. **Timing-attack-vulnerable comparison.** Comparing secrets with `==` or `!=` instead of `hmac.compare_digest`.
-47. **CSRF gap on state-changing endpoint.** Accepting POST that mutates without a CSRF token.
-48. **CORS misconfiguration.** `Access-Control-Allow-Origin: *` on an authenticated route, or reflecting the request origin without validation.
-49. **Open redirect.** User-controlled redirect target.
-50. **Mass assignment.** Binding request body directly to a model with privileged fields (`is_admin`, `role`).
+Grouped by sub-bucket. Items F.39–F.54 below.
+
+#### F.1 — Authentication & authorization
+- **F.39 — Missing authorization.** Checks authentication, never checks permissions.
+- **F.40 — IDOR.** Allows `/users/17` → `/users/18`.
+- **F.41 — Missing rate limiting.** Unlimited login attempts.
+- **F.42 — Weak session handling.** Infinite sessions.
+- **F.43 — Missing audit logging.** Sensitive actions leave no record.
+- **F.44 — CSRF gap on state-changing endpoint.** Accepting POST that mutates without a CSRF token.
+
+#### F.2 — Cryptography & secrets
+- **F.45 — Logging secrets.** JWTs, passwords, OAuth tokens, API keys.
+- **F.46 — Timing-attack-vulnerable comparison.** Comparing secrets with `==` or `!=` instead of `hmac.compare_digest`.
+- **F.47 — Insecure defaults.** Debug mode enabled.
+
+#### F.3 — Data exposure
+- **F.48 — Sensitive error messages.** Returns stack trace, DB password, internal path.
+- **F.49 — Trusting client data.** Accepts prices from frontend.
+- **F.50 — Mass assignment.** Binding request body directly to a model with privileged fields (`is_admin`, `role`).
+- **F.51 — Path traversal.** File ops on user-supplied path without sanitization.
+- **F.52 — SSRF.** Server-side request using user input as URL.
+
+#### F.4 — Input handling & process
+- **F.53 — Prototype pollution / insecure deserialization.** `pickle.loads`, `yaml.load` (without `SafeLoader`), untrusted JSON with reviver.
+- **F.54 — Open redirect.** User-controlled redirect target.
+- **F.55 — CORS misconfiguration.** `Access-Control-Allow-Origin: *` on an authenticated route, or reflecting the request origin without validation.
 
 ### G. Performance failures
 
-43. **Accidental O(n³).** Nested loops inside nested loops.
-44. **Query explosion.** Thousands of database queries.
-45. **Cache misuse.** Never invalidates.
-46. **Cache stampedes.** Thousands of simultaneous refreshes.
-47. **Serialization bottlenecks.** Repeated JSON conversions.
-48. **Object churn.** Creates millions of temporary objects.
-49. **Excess allocations.** Repeated string copies.
-50. **Hidden blocking.** Network call inside hot loop.
-51. **Busy waiting.** `while True: check()`.
-52. **Unnecessary work in hot path.** Logging at INFO inside a per-request handler. JSON-encoding a value just to debug-log its type.
-53. **N+1 disguised as a loop.** ORM `.get()` or `.filter().first()` inside a `for` row in row.
-54. **String concatenation in tight loop.** `s += piece` instead of `"".join(parts)`.
-55. **Re-reading the same file / record repeatedly.** Missing memoization on a deterministic lookup inside a loop.
+56. **Accidental O(n³).** Nested loops inside nested loops.
+57. **Query explosion.** Thousands of database queries.
+58. **Cache misuse.** Never invalidates, or invalidates too aggressively, or invalidates the wrong key.
+59. **Cache stampedes.** Thousands of simultaneous refreshes.
+60. **Serialization bottlenecks.** Repeated JSON conversions.
+61. **Object churn.** Creates millions of temporary objects.
+62. **Excess allocations.** Repeated string copies.
+63. **Hidden blocking.** Network call inside hot loop.
+64. **Busy waiting.** `while True: check()`.
+65. **Unnecessary work in hot path.** Logging at INFO inside a per-request handler. JSON-encoding a value just to debug-log its type.
+66. **N+1 disguised as a loop.** ORM `.get()` or `.filter().first()` inside a `for` row in row.
+67. **String concatenation in tight loop.** `s += piece` instead of `"".join(parts)`.
+68. **Re-reading the same file / record repeatedly.** Missing memoization on a deterministic lookup inside a loop.
 
 ### H. Testing failures
 
-52. **Tests mirror implementation.** Instead of validating requirements.
-53. **Circular testing.** Generated code, generated tests, both share the same mistake.
-54. **Snapshot abuse.** Every UI change updates snapshots, nothing actually verified.
-55. **Missing negative tests.** Only success cases.
-56. **No property testing.**
-57. **No fuzz testing.**
-58. **No stress testing.**
-59. **No concurrency testing.**
-60. **Fake coverage.** 95% coverage, critical paths untested.
-61. **Tests that mock the system under test.** Mock out the function you're supposedly testing.
-62. **Tests that assert on the implementation's own output.** Round-trip the input through a function, assert it equals the input. Passes always.
-63. **Tests that pass but skip.** `.skip()`, `xfail`, `it.skip`, `pytest.skip` without an issue and without being deleted.
-64. **Tests with no assertions.** `def test_foo(): setup(); pass`.
-65. **Test names that don't describe behavior.** `test1`, `test_works`, `test_method`.
-66. **Tests that depend on external services.** Network, real DB, real filesystem — without a fixture or container.
-67. **Tests that depend on test order.** Pass when run together, fail when isolated.
-68. **Tests with hardcoded dates.** `assert created_at == "2025-01-15"` will rot in a week.
+69. **Tests mirror implementation.** Instead of validating requirements.
+70. **Circular testing.** Generated code, generated tests, both share the same mistake.
+71. **Snapshot abuse.** Every UI change updates snapshots, nothing actually verified.
+72. **Missing negative tests.** Only success cases.
+73. **No property testing.**
+74. **No fuzz testing.**
+75. **No stress testing.**
+76. **No concurrency testing.**
+77. **Fake coverage.** 95% coverage, critical paths untested.
+78. **Tests that mock the system under test.** Mock out the function you're supposedly testing.
+79. **Tests that assert on the implementation's own output.** Round-trip the input through a function, assert it equals the input. Passes always.
+80. **Tests that pass but skip.** `.skip()`, `xfail`, `it.skip`, `pytest.skip` without an issue and without being deleted.
+81. **Tests with no assertions.** `def test_foo(): setup(); pass`.
+82. **Test names that don't describe behavior.** `test1`, `test_works`, `test_method`.
+83. **Tests that depend on external services.** Network, real DB, real filesystem — without a fixture or container.
+84. **Tests that depend on test order.** Pass when run together, fail when isolated.
+85. **Tests with hardcoded dates.** `assert created_at == "2025-01-15"` will rot in a week.
 
 ### I. AI-specific failures
 
-61. **Context poisoning.** Bad context contaminates later generations.
-62. **Prompt drift.** After many iterations, AI slowly changes goals.
-63. **Compounding hallucinations.** Hallucination A creates hallucination B creates hallucination C.
-64. **Self-reinforcing errors.** AI trusts its own previous mistake.
-65. **Fake confidence.** Explains incorrect code beautifully.
-66. **Explanation hallucinations.** Explanation doesn't match implementation.
-67. **Refactoring regressions.** Fixes one bug, introduces five.
-68. **Multi-file inconsistency.** Edits one file, forgets related files.
-69. **Tool misuse.** Calls build tools incorrectly.
-70. **Agent permission mistakes.** Autonomous agents with filesystem/terminal access making damaging changes due to excessive permissions or weak confirmation.
-71. **Anchoring bias.** The first generated solution colors all subsequent ones — even when wrong, the AI defends it.
-72. **Sunk-cost continuation.** Refuses to abandon a flawed approach after several iterations.
-73. **Sycophantic agreement.** Changes its mind when challenged, even when originally right.
-74. **Cargo-cult first-file.** Re-reads the first file the user showed it, ignores the rest of the project.
-75. **Recency bias.** The most recently mentioned file gets edited, even if unrelated to the actual request.
-76. **Verbose apology.** Spends 30% of output apologizing for an unrelated earlier mistake.
-77. **Echo of the prompt.** Repeats the user's request back in slightly different words as a "summary" of what it's about to do.
-78. **Hidden assumptions made explicit.** States "I'm assuming X" without flagging it as needing confirmation.
+86. **Context poisoning.** Bad context contaminates later generations.
+87. **Prompt drift.** After many iterations, AI slowly changes goals.
+88. **Compounding hallucinations.** Hallucination A creates hallucination B creates hallucination C.
+89. **Self-reinforcing errors.** AI trusts its own previous mistake.
+90. **Fake confidence.** Explains incorrect code beautifully.
+91. **Explanation hallucinations.** Explanation doesn't match implementation.
+92. **Refactoring regressions.** Fixes one bug, introduces five.
+93. **Multi-file inconsistency.** Edits one file, forgets related files.
+94. **Tool misuse.** Calls build tools incorrectly.
+95. **Agent permission mistakes.** Autonomous agents with filesystem/terminal access making damaging changes due to excessive permissions or weak confirmation.
+96. **Anchoring bias / sunk-cost continuation.** The first generated solution colors all subsequent ones, and after several iterations the AI refuses to abandon a flawed approach. Sunk-cost is a special case of anchoring — once the AI has invested in a direction, it defends it.
+97. **Sycophantic agreement.** Changes its mind when challenged, even when originally right.
+98. **Cargo-cult first-file.** Re-reads the first file the user showed it, ignores the rest of the project.
+99. **Recency bias.** The most recently mentioned file gets edited, even if unrelated to the actual request.
+100. **Verbose apology.** Spends 30% of output apologizing for an unrelated earlier mistake.
+101. **Echo of the prompt.** Repeats the user's request back in slightly different words as a "summary" of what it's about to do.
 
-### J. Human factors
-
-71. **Review fatigue.** AI produces 2,000-line PRs, nobody reviews carefully.
-72. **Trust inflation.** Looks polished, gets approved.
-73. **Loss of understanding.** Devs spend more time understanding AI changes than writing them.
-74. **Maintenance debt.** Easy to generate, expensive to maintain.
-75. **Ownership confusion.** Nobody fully understands the generated code.
-76. **AI code accumulation.** Small AI patches gradually erode a clean codebase — inconsistent abstractions, duplicated logic, architectural drift. Maintainers spend more time cleaning up than writing features.
-77. **"Helpful" unsolicited refactors in bug reports.** The user reports a bug; the AI rewrites the surrounding file "while it's in there."
-78. **Testimonials in commit messages.** "This is much better!", "Great catch!", "Now this is clean."
-79. **PR descriptions that describe the prompt, not the change.** "User asked to add a delete button. I added a delete button." (Should describe what the change does and why.)
+(Social and organizational items like "review fatigue," "trust inflation," "ownership confusion," and "AI code accumulation" are out of scope for a code-level cleanup loop — a code scan cannot detect them. They are documented separately in the loops repo's team-process notes for managers, not in the slop taxonomy. The two items from that bucket that the loop *can* detect — testimonials in commit messages and prompt-echoing PR descriptions — are in L.10 and L.11 below.)
 
 ### K. Embedded and systems programming failures
 
@@ -227,7 +256,9 @@ Distinct from code slop — this is what AI writes in comments, docstrings, READ
 - **L.7** — Conclusion-summary that says "in summary": a TL;DR after a 200-word text the reader just consumed.
 - **L.8** — Markdown for non-markdown contexts: bolding and headers in error messages, log lines, or CLI output.
 - **L.9** — Asks for confirmation when none is needed: "Would you like me to…?" after already doing it. Or "Should I proceed?" mid-flow.
-- **L.10** — Tone mismatched to context: cheerful in a debugging session, formal in a chat, over-eager in a code review.
+- **L.10** — Testimonials in commit messages: "This is much better!", "Great catch!", "Now this is clean."
+- **L.11** — PR descriptions that describe the prompt, not the change: "User asked to add a delete button. I added a delete button." (Should describe what the change does and why.)
+- **L.12** — Tone mismatched to context: cheerful in a debugging session, formal in a chat, over-eager in a code review.
 
 ### M. Type-system slop (code that compiles but lies)
 
@@ -317,7 +348,7 @@ Distinct from code slop — this is what AI writes in comments, docstrings, READ
 
 ### Scope reminder
 
-The taxonomy is comprehensive but not every category is in scope for every pass. The scan phase should weight categories based on the target: a kernel module scan weights K heavily; a web app scan weights F and J; a refactor scan weights C and E. Use the same persona that finds dead code to find zombie code (E.31), and the same persona that catches missing tests to catch circular tests (H.53).
+The taxonomy is comprehensive but not every category is in scope for every pass. The scan phase should weight categories based on the target: a kernel module scan weights K heavily; a web app scan weights F and L; a refactor scan weights C and E. Use the same persona that finds dead code to find zombie code (E.33), and the same persona that catches missing tests to catch circular tests (H.70).
 
 When in doubt: would a senior engineer reading this code at 11pm want this line to be there? If not, it's slop.
 
