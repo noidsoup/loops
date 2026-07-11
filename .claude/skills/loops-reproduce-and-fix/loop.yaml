@@ -30,3 +30,6 @@ triggers:
   - "fix this bug"
 consumes: [intent, symptom]
 produces: [repro, tests, code, handoff]
+personas:
+  reproduce: regression-hunter
+  failing-test: edge-case-analyst

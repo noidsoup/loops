@@ -30,3 +30,5 @@ triggers:
   - "let's add"
 consumes: [intent]
 produces: [code, spec, handoff]
+personas:
+  spec: [simplicity-advocate, dx-critic]

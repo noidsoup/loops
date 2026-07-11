@@ -16,13 +16,27 @@ Don't use for adding a brand-new dependency as part of a feature (`plan-and-impl
 
 See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **inventory / plan** → `high-reasoning` (Task/subagent); **execute** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
 
+## Personas (review lenses)
+
+Personas live at `LOOPS_ROOT/personas/<name>.md`. **Before each persona step, Read that file** and adopt its voice for that step only, then drop it.
+
+| Step | Persona | Why |
+|---|---|---|
+| Inventory — blast radius | `regression-hunter` | Find the call sites and behaviors that will silently break. |
+| Plan — optional API review | `api-contract-guardian` | When upgrading a library with public API changes, audit every consumer. Skip for trivial patch bumps. |
+| Execute / Hand off | — | Mechanical; checklist is the contract. |
+
+Use `regression-hunter` for every upgrade. Only pull in `api-contract-guardian` when the upgrade touches a public API or a library you don't fully own.
+
 ## Phase 1 — Inventory
 
+Personas first. **Read** `LOOPS_ROOT/personas/regression-hunter.md` before scoping. Use it to ask: "where is this upgrade's blast radius — which call sites, configs, and assumptions will break silently?" Then:
+
 1. **Current → target.** Exact versions (from lockfile / manifests).
-2. **Blast radius.** Direct deps, peer deps, breaking-change notes, codemods available.
+2. **Blast radius.** Direct deps, peer deps, breaking-change notes, codemods available. The persona should have surfaced call sites you didn't know existed.
 3. **Touch points.** Config, build, CI, runtime, deprecations already warning in logs.
 4. **Risks.** Auth, data migrations, public API, native modules, deploy assumptions.
-5. **Exit when:** short inventory is on the page with known unknowns listed.
+5. **Exit when:** short inventory is on the page with known unknowns listed, including any sibling call sites the persona named.
 
 ## Phase 2 — Plan + rollback
 

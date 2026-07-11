@@ -15,12 +15,24 @@ If the request is "add tests for existing code with no behavior change," still f
 
 See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **red** (test design) → `high-reasoning` preferred via Task/subagent; **green / refactor** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
 
+## Personas (review lenses)
+
+Personas live at `LOOPS_ROOT/personas/<name>.md`. **Before each persona step, Read that file** and adopt its voice for that step only, then drop it.
+
+| Step | Persona | Why |
+|---|---|---|
+| Red — input design | `edge-case-analyst` | Surface inputs/edges the happy-path author is missing. |
+| Red — failure modes | `regression-hunter` | Name the way this *will* break in production; lock it in now. |
+| Green / Refactor | — | Mechanical; tests are the contract. |
+
+Use the personas in Red to widen the test set. If the feature is genuinely trivial (one-line, obvious edges), one persona pass is enough. The goal is *real* coverage, not ceremony.
+
 ## Phase 1 — Red
 
-Name the behavior in a test before touching production code.
+Personas first. **Read** `LOOPS_ROOT/personas/edge-case-analyst.md` and `LOOPS_ROOT/personas/regression-hunter.md` before writing tests. Use them to ask: "what input/state/sequence am I assuming can't happen, but probably can?" and "what's the most likely way this breaks six months from now?" Then:
 
 1. **Pick the public surface.** Test what callers see (API, function, CLI, UI contract) — not private helpers unless that's the only seam.
-2. **Write one failing test** (or a small focused set) that asserts the desired behavior. Prefer the project's existing test runner and style.
+2. **Write one failing test** (or a small focused set) that asserts the desired behavior. Prefer the project's existing test runner and style. The personas' questions should add at least one test you'd have skipped otherwise.
 3. **Run it.** Confirm it fails for the *right* reason (assertion/missing behavior), not because of a typo, wrong import, or broken setup.
 4. **Exit when:** the failure message clearly describes the missing behavior.
 

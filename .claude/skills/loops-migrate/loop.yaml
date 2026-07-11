@@ -28,3 +28,7 @@ triggers:
   - "major version"
 consumes: [intent]
 produces: [checklist, code, handoff]
+personas:
+  inventory: regression-hunter
+  plan: api-contract-guardian
+  plan_optional: true

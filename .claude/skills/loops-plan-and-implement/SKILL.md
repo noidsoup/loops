@@ -16,9 +16,22 @@ If the request turns out to be trivial (one-line fix, one-file change with obvio
 
 See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). Phase map: **spec / confirm** → `high-reasoning` (Task/subagent); **implement** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
 
+## Personas (review lenses)
+
+Personas live at `LOOPS_ROOT/personas/<name>.md`. **Before each persona step, Read that file** and adopt its voice for that step only, then drop it.
+
+| Step | Persona | Why |
+|---|---|---|
+| Spec — simplicity | `simplicity-advocate` | Cut features and abstractions that don't earn their keep. |
+| Spec — developer experience | `dx-critic` | Surface friction the author is too close to see (config, errors, footguns). |
+| Implement | — | Tests + the spec are the contract. |
+| Hand off | — | Mechanical. |
+
+The personas in Spec attack the *plan*, not the code. If they say "drop this, no one asked for it," drop it. If they say "this will be painful to use," redesign before writing code.
+
 ## Phase 1 — Spec
 
-Write a tight specification before touching code. The spec lives in this conversation; it does not need to be a file. Cover:
+Personas first. **Read** `LOOPS_ROOT/personas/simplicity-advocate.md` and `LOOPS_ROOT/personas/dx-critic.md` before finalizing the spec. Use them to ask: "is this feature or abstraction earning its keep?" and "will the resulting API/config/errors be pleasant to live with?" Then write a tight specification before touching code. The spec lives in this conversation; it does not need to be a file. Cover:
 
 1. **Goal.** One sentence. What does success look like, from the user's perspective?
 2. **Non-goals.** What are you explicitly NOT building? (This is what stops scope creep.)

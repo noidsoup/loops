@@ -30,3 +30,5 @@ triggers:
   - "test-driven development"
 consumes: [intent]
 produces: [tests, code, handoff]
+personas:
+  red: [edge-case-analyst, regression-hunter]
