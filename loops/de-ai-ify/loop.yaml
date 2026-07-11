@@ -1,0 +1,79 @@
+name: de-ai-ify
+version: 0.1.0
+description: |
+  Polish code that reads as AI-generated. Identifies over-commenting, useless
+  docstrings, defensive padding, generic names, AI-isms in prose, and other
+  slop; proposes minimal-diff cleanups; applies them; verifies the project
+  still passes its checks. Dog-food by running it on the loops repo itself.
+phases:
+  - name: scan
+    model_class: high-reasoning
+    goal: Read the target files. Build a structured finding list (file, line, category, snippet, proposed replacement, reason) anchored in the slop taxonomy in loop.md.
+    exit_condition: Finding list is structured, every entry has all five fields, trivial findings excluded.
+  - name: spec
+    model_class: high-reasoning
+    goal: "Convert findings into a patch spec: old_text, new_text, rationale per edit. Group by file, order top-to-bottom within each file."
+    exit_condition: Spec is in patchable form; user has had a beat to react (or --auto is set).
+  - name: apply
+    model_class: workhorse
+    goal: Apply edits in order using patch/Edit with exact old_text. Do not bundle extra changes. Surface failed edits; do not silently skip.
+    exit_condition: Every spec edit applied, or failed edits surfaced to the user.
+  - name: verify
+    model_class: workhorse
+    goal: Run the project's test/lint/typecheck suite. Revert any edit that introduced a new failure. Note pre-existing failures.
+    exit_condition: Verification ran; result is green or pre-existing failures are documented.
+  - name: handoff
+    model_class: cheap-fast
+    goal: Report files touched, the diff, verification results, slop-removed-by-category table, leftover items.
+    exit_condition: Handoff message sent.
+triggers:
+  - "de-ai-ify"
+  - "de ai ify"
+  - "de-slopify"
+  - "deslopify"
+  - "de slopify"
+  - "remove the slop"
+  - "take the slop out"
+  - "strip the slop"
+  - "clean up the slop"
+  - "clean the slop"
+  - "kill the slop"
+  - "kill the ai"
+  - "humanize this"
+  - "polish this"
+  - "clean this up"
+  - "ai slop"
+  - "looks like ai"
+  - "looks ai generated"
+  - "reads like ai"
+  - "make it human"
+  - "make it read like a human"
+  - "stop sounding like ai"
+consumes: [target_path_or_diff]
+produces: [finding_list, spec, diff, handoff]
+personas:
+  scan: simplicity-advocate
+  verify: regression-hunter
+persona_notes: |
+  The scan persona is what stops the loop from manufacturing slop to justify
+  running. The verify persona is what stops the loop from shipping a clean-
+  looking diff that broke the build.
+scope_exclusions:
+  - node_modules/
+  - vendor/
+  - dist/
+  - build/
+  - .venv/
+  - __pycache__/
+  - generated files (any path matching common generator patterns)
+  - vendored libraries
+  - paths in .gitignore
+verification:
+  discovery: |
+    Look for project verification commands: package.json scripts, Makefile
+    targets, pyproject.toml, Cargo.toml, tsconfig.json, go.mod, etc. Use the
+    project's existing tooling; do not invent a new test runner.
+  failure_handling: |
+    New failures are regressions — revert that finding's edit, mark it for
+    re-spec, continue with the rest. Pre-existing failures are noted but not
+    the loop's responsibility.

@@ -91,7 +91,8 @@ In Cursor or Claude Code, say any of:
 - "reproduce this bug" → `reproduce-and-fix`
 - "upgrade Next to 15" → `migrate`
 - "explain this codebase" → `explain-codebase`
-- "swarm this feature" → `swarm` (full ship pipeline)
+- "de-ai-ify" / "de-slopify" / "remove the slop" / "take the slop out" / "clean up the slop" / "polish this" / "humanize this" / "make it read like a human" → `de-ai-ify`
+- "swarm this"
 - "use the loops on this" → `use-the-loop` (smallest composition / meta-router)
 
 You usually don't name loops. The agent classifies intent and dispatches. Explicit names ("run tdd") also work.
@@ -147,6 +148,7 @@ Re-run `node adapters/emit.js` after editing any `loop.md`. For global installs,
 | `reproduce-and-fix` | Minimal repro → failing test → fix → prove green. |
 | `migrate` | Version/framework upgrade with checklist and rollback. |
 | `explain-codebase` | Onboarding map for an unfamiliar repo. |
+| `de-ai-ify` | Polish code that reads as AI-generated. Identify slop, propose minimal-diff cleanups, apply, verify. |
 | `swarm` | Mega-loop. Full beginning-to-end ship pipeline for the task. |
 | `use-the-loop` | Meta-router. Smallest composition that fits; may chain 2. |
 

@@ -20,6 +20,7 @@ classification:
     - reproduce-and-fix
     - migrate
     - explain-codebase
+    - de-ai-ify
     - swarm
     - use-the-loop
   method: llm-intent-classification
