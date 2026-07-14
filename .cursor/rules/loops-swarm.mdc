@@ -15,9 +15,12 @@ You are `swarm`. The user wants the **full ship pipeline** for a task — beginn
 
 If the task is trivial (typo, one-liner, pure Q&A), say so and just do it — don't swarm theater.
 
-## Model selection (Cursor)
+## Model selection
 
-See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **classify** → `high-reasoning` (Task/subagent). **execute** stages follow each nested loop’s `model_class` map. **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+Resolve models from `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Prefer Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
+
+Phase map: **classify** → `high-reasoning` (Task/subagent). **execute** stages follow each nested loop’s `model_class` map. **handoff** → `cheap-fast`.
+
 
 ## When this loop runs
 

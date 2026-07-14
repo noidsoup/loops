@@ -196,9 +196,34 @@ describe('docs', () => {
     const local = fs.readFileSync(path.join(REPO, 'INSTALL.mdc'), 'utf8');
     assert.match(global, /MODEL_CLASSES\.md/);
     assert.match(local, /MODEL_CLASSES\.md/);
+    assert.match(global, /MODEL_CLASSES\.local\.md/);
+    assert.match(local, /MODEL_CLASSES\.local\.md/);
     // No full preference table (those live only in MODEL_CLASSES.md)
     assert.doesNotMatch(global, /claude-opus-4-8-thinking-high.*composer-2\.5/);
     assert.doesNotMatch(local, /claude-opus-4-8-thinking-high.*composer-2\.5/);
+  });
+
+  it('MODEL_CLASSES.local.example.md exists and local file is gitignored', () => {
+    assert.ok(fs.existsSync(path.join(REPO, 'adapters/MODEL_CLASSES.local.example.md')));
+    const gi = fs.readFileSync(path.join(REPO, '.gitignore'), 'utf8');
+    assert.match(gi, /MODEL_CLASSES\.local\.md/);
+  });
+
+  it('shared docs do not hardcode Fable / Hermes / Nous as defaults', () => {
+    const files = [
+      'adapters/MODEL_CLASSES.md',
+      'README.md',
+      'INSTALL-GLOBAL.mdc',
+      'INSTALL.mdc',
+      'INSTALL-CLAUDE.md',
+      'INSTALL-RESOLUTION.mdc',
+    ];
+    for (const rel of files) {
+      const text = fs.readFileSync(path.join(REPO, rel), 'utf8');
+      assert.doesNotMatch(text, /\bFable\b/, rel);
+      assert.doesNotMatch(text, /\bHermes\b/, rel);
+      assert.doesNotMatch(text, /\bNous\b/, rel);
+    }
   });
 
   it('INSTALL-CLAUDE.md exists for per-project Claude awareness', () => {

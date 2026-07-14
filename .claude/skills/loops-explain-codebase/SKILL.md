@@ -12,9 +12,12 @@ You are `explain-codebase`. The user is new to this repo (or wants a map). Your 
 
 Don't implement features here. If they ask to change something after the map, hand off to another loop.
 
-## Model selection (Cursor)
+## Model selection
 
-See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **orient / handoff** → `cheap-fast`; **map** → `workhorse`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory.
+Resolve models from `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Prefer Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
+
+Phase map: **orient / handoff** → `cheap-fast`; **map** → `workhorse`.
+
 
 ## Phase 1 — Orient
 

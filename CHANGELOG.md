@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2 — 2026-07-14
+
+General-audience docs + configurable model stack:
+
+- **README:** Rewritten for strangers (why, quick start, catalog, HTTPS clone URLs).
+- **Model classes:** Portable defaults in `adapters/MODEL_CLASSES.md` (Cursor Auto + Claude advisory). Personal stacks/bans live in gitignored `adapters/MODEL_CLASSES.local.md` (see `.local.example.md`). Agents prefer local when present.
+- **Scrub:** Hermes / Nous / Fable removed from shared docs and loop blurbs; pack disambiguation is skill-pack-agnostic.
+- **Install awareness:** Points at defaults + local override; lists `de-ai-ify`.
+
 ## 0.1.1 — 2026-07-10
 
 Quality / ease-of-use audit fixes:

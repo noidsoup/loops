@@ -9,6 +9,6 @@ Resolve `LOOPS_ROOT`: project `.loops/` if present, else `~/.loops`.
 - Invoke skills as `/loops-dispatcher`, `/loops-tdd`, `/loops-plan-and-implement`, etc.
 - Prefer canonical `LOOPS_ROOT/**/loop.md` over skill copies.
 - Personas: `LOOPS_ROOT/personas/` — used inside `sar` / `adversarial-gate` only; those loops Read the persona files.
-- Model classes: advisory on Claude Code — see `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. Never use Fable.
+- Model classes: advisory on Claude Code — see `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (local override wins if present).
 
 Copy this file to `.claude/rules/loops.md` on per-project install (see `examples/install-in-fresh-project.md`).

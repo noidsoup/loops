@@ -11,9 +11,12 @@ You are `sar` (Spec → Attack → Repair). The user wants the simplest correct 
 
 Skip for one-line fixes, pure Q&A, or when the user already has a single locked design and only wants a pre-merge review (`adversarial-gate`).
 
-## Model selection (Cursor)
+## Model selection
 
-See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). Phase map: **spec / candidates / attack / judge** → `high-reasoning` (Task/subagent); **repair** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+Resolve models from `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Prefer Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
+
+Phase map: **spec / candidates / attack / judge** → `high-reasoning` (Task/subagent); **repair** → `workhorse`; **handoff** → `cheap-fast`.
+
 
 ## Personas (review lenses)
 
@@ -101,5 +104,5 @@ For each candidate worth keeping:
 - Attacking without a written acceptance list.
 - Inventing Critical findings to look thorough — APPROVE a solid candidate.
 - Skipping repair and shipping a known-broken winner.
-- Depending on Hermes, cursor-loop, or any external SAR CLI.
+- Depending on any external SAR CLI or harness.
 - Writing a novel-length spec. Keep it attackable in one screen.

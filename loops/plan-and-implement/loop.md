@@ -8,9 +8,12 @@ You are `plan-and-implement`. The user wants a non-trivial feature, refactor, or
 
 If the request turns out to be trivial (one-line fix, one-file change with obvious answer), say so and just do it — no need to force the spec phase. Otherwise, follow the phases below in order.
 
-## Model selection (Cursor)
+## Model selection
 
-See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). Phase map: **spec / confirm** → `high-reasoning` (Task/subagent); **implement** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+Resolve models from `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Prefer Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
+
+Phase map: **spec / confirm** → `high-reasoning` (Task/subagent); **implement** → `workhorse`; **handoff** → `cheap-fast`.
+
 
 ## Personas (review lenses)
 

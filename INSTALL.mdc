@@ -30,6 +30,7 @@ Below, `LOOPS_ROOT` means `.loops/` in this project (or `~/.loops` when using th
 - `reproduce-and-fix` — Minimal repro → failing test → fix → prove green.
 - `migrate` — Version/framework upgrade with checklist and rollback.
 - `explain-codebase` — Onboarding map for an unfamiliar repo.
+- `de-ai-ify` — Polish code that reads as AI-generated.
 - `swarm` — Mega-loop. Full beginning-to-end ship pipeline.
 - `use-the-loop` — Meta-router. Smallest composition; open-ended tasks.
 
@@ -43,11 +44,11 @@ After `node LOOPS_ROOT/adapters/emit.js` (from a `.loops/` clone, emit writes in
 - Claude Code: `.claude/skills/loops-*/` (invoke `/loops-dispatcher`, etc.)
 - Claude awareness: `.claude/rules/loops.md` (copy from `LOOPS_ROOT/INSTALL-CLAUDE.md` on per-project install)
 
-The `loops-` prefix avoids colliding with other skills (e.g. Hermes `plan-and-implement`). Prefer reading canonical `LOOPS_ROOT/**/loop.md` when running a loop.
+The `loops-` prefix avoids colliding with other skill packs. Prefer reading canonical `LOOPS_ROOT/**/loop.md` when running a loop.
 
 ## Model selection
 
-Phases declare `model_class` in each loop’s `loop.yaml`. **Single source of truth:** `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. Prefer the strongest available non-Fable model; use Task/subagent for `high-reasoning` when available; fall back to `grok-4.5-xhigh` on Cursor usage limits. Never use Fable. Claude Code: classes are advisory.
+Phases declare `model_class` in each loop’s `loop.yaml`. Defaults: `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Use Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
 
 ## What NOT to do
 

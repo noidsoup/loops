@@ -3,3 +3,6 @@ node_modules/
 *.log
 .env
 .env.local
+
+# Personal model stack / bans — see adapters/MODEL_CLASSES.local.example.md
+adapters/MODEL_CLASSES.local.md

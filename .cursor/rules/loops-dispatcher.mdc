@@ -49,7 +49,7 @@ Read the user's request. Look for the strongest signal in this order:
 
 ## Model selection
 
-Classification stays on the **current session model** — do not spawn a subagent just to classify. After dispatch, the **chosen loop** owns `model_class` behavior for its phases (see `LOOPS_ROOT/adapters/MODEL_CLASSES.md`). Never recommend Fable.
+Classification stays on the **current session model** — do not spawn a subagent just to classify. After dispatch, the **chosen loop** owns `model_class` behavior for its phases (see `LOOPS_ROOT/adapters/MODEL_CLASSES.md`; local override wins if present).
 
 ## How to dispatch
 

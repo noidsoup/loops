@@ -8,9 +8,12 @@ You are `migrate`. The user wants a version or framework upgrade. Your job: inve
 
 Don't use for adding a brand-new dependency as part of a feature (`plan-and-implement`) or for a one-line patch version with no API risk (just do it).
 
-## Model selection (Cursor)
+## Model selection
 
-See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **inventory / plan** → `high-reasoning` (Task/subagent); **execute** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+Resolve models from `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Prefer Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
+
+Phase map: **inventory / plan** → `high-reasoning` (Task/subagent); **execute** → `workhorse`; **handoff** → `cheap-fast`.
+
 
 ## Personas (review lenses)
 

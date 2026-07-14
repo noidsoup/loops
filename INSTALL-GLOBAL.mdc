@@ -38,6 +38,7 @@ Below, `LOOPS_ROOT` means that resolved path.
 - `reproduce-and-fix` — Minimal repro → failing test → fix → prove green.
 - `migrate` — Version/framework upgrade with checklist and rollback.
 - `explain-codebase` — Onboarding map for an unfamiliar repo.
+- `de-ai-ify` — Polish code that reads as AI-generated.
 - `swarm` — Mega-loop. Full beginning-to-end ship pipeline.
 - `use-the-loop` — Meta-router. Smallest composition; open-ended tasks.
 
@@ -56,15 +57,15 @@ Prefer reading canonical `LOOPS_ROOT/**/loop.md` when running a loop. The emitte
 
 ## Model selection
 
-Phases declare a `model_class` in each loop’s `loop.yaml`. **Single source of truth:** `LOOPS_ROOT/adapters/MODEL_CLASSES.md`.
+Phases declare a `model_class` in each loop’s `loop.yaml`. Defaults: `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins** (personal bans, preferred models, extra platforms).
 
-Prefer the strongest available non-Fable model for the phase class. Use Task/subagent for `high-reasoning` when available; otherwise continue best-effort in-session. On Cursor usage/unavailable → retry with `grok-4.5-xhigh` (one short line to the user). **Banned:** any Fable model.
+Use Task/subagent for `high-reasoning` when available; otherwise continue best-effort in-session. On model unavailable / quota, fall back per the resolved model file and tell the user in one line.
 
 Dispatcher classification may stay on the current model. After dispatch, the **chosen loop** owns model-class behavior.
 
 ### Claude Code (advisory)
 
-Claude often cannot switch models mid-session. Treat `model_class` as guidance: start a high-reasoning session (or a second session) when you can; otherwise continue best-effort and note once if you could not switch. Same Fable ban.
+Claude often cannot switch models mid-session. Treat `model_class` as guidance: start a high-reasoning session (or a second session) when you can; otherwise continue best-effort and note once if you could not switch.
 
 ## What NOT to do
 
@@ -72,7 +73,7 @@ Claude often cannot switch models mid-session. Treat `model_class` as guidance: 
 - Don't invent new loops. If nothing fits, route to `use-the-loop`.
 - Don't run loops without following the phases. Each loop's `loop.md` defines its own contract.
 - Don't treat personas as dispatcher options.
-- Don't overwrite unrelated skills in `~/.cursor/skills/` or `~/.claude/skills/` (Hermes / other packs). Loops skills are always `loops-*`.
+- Don't overwrite unrelated skills in `~/.cursor/skills/` or `~/.claude/skills/` (other packs). Loops skills are always `loops-*`.
 
 ## Re-emitting and refreshing the global install
 

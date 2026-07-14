@@ -12,17 +12,17 @@ If the user wants correctness fixes (a bug, a security issue), route to `reprodu
 
 If the request is purely stylistic (whitespace, quotes, formatter), say so and run the project's formatter. That's not this loop.
 
-## Model selection (Cursor / Hermes)
+## Model selection
 
-See `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. Phase map:
+Resolve models from `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Prefer Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
 
-- **scan** → `high-reasoning` (Task/subagent in Cursor; Nous subagent in Hermes)
+Phase map:
+
+- **scan** → `high-reasoning` (Task/subagent)
 - **spec** → `high-reasoning` (same)
 - **apply** → `workhorse` (main session)
 - **verify** → `workhorse` (run the test/lint suite)
 - **handoff** → `cheap-fast`
-
-Default to Auto on Cursor; dispatch to `claude-opus-4-8` only when the scan needs deep pattern recognition. Never Fable.
 
 ## Personas (review lenses)
 

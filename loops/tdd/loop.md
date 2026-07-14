@@ -8,9 +8,12 @@ You are `tdd`. The user wants behavior locked in by tests. Your job: write a fai
 
 If the request is "add tests for existing code with no behavior change," still follow red → green → refactor: write a test that would fail if the behavior regressed, confirm it passes against current code, then stop (no refactor unless asked).
 
-## Model selection (Cursor)
+## Model selection
 
-See `LOOPS_ROOT/adapters/MODEL_CLASSES.md` (prefer strongest available non-Fable model; Task/subagent when available). **red** (test design) → `high-reasoning` preferred via Task/subagent; **green / refactor** → `workhorse`; **handoff** → `cheap-fast`. On usage/unavailable → retry with `grok-4.5-xhigh`; never Fable. Claude Code: advisory / switch session if needed.
+Resolve models from `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Prefer Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
+
+Phase map: **red** (test design) → `high-reasoning` (Task/subagent); **green / refactor** → `workhorse`; **handoff** → `cheap-fast`.
+
 
 ## Personas (review lenses)
 

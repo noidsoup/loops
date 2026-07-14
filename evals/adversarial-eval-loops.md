@@ -73,8 +73,8 @@ You are attacking on FOUR axes, in order of priority. For each, find the
 strongest concrete issue. Quote the line / section. Be specific.
 
 1. INSTALL FRICTION.
-   The v1 test is: an engineer with a fresh Mac, no admin, no Hermes
-   installed, can go from "git clone" to "agent using loops" in under 5
+   The v1 test is: an engineer with a fresh Mac, no admin, no extra
+   agent tooling installed, can go from "git clone" to "agent using loops" in under 5
    minutes. Read the README install section + the example. Find the
    single highest-friction step. What does the friend hit that makes
    them say "ugh"?

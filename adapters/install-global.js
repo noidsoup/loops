@@ -219,7 +219,7 @@ function buildAwarenessBody({ forClaude }) {
       '- There is no Cursor-style `alwaysApply` flag; this file under `~/.claude/rules/` is the user-level always-on hook.',
       '- Skills are discovered from `~/.claude/skills/loops-*/`. Prefer `/loops-dispatcher` or say "use the loops".',
       '- Claude follows symlinks for skill directories; supporting files may be symlinked from `~/.loops`.',
-      '- **Model classes are advisory** on Claude Code (often cannot switch mid-session). Prefer a high-reasoning session or a second session for `high-reasoning` phases when possible; otherwise continue best-effort. Never use Fable. See `adapters/MODEL_CLASSES.md`.',
+      '- **Model classes are advisory** on Claude Code (often cannot switch mid-session). Prefer a high-reasoning session or a second session for `high-reasoning` phases when possible; otherwise continue best-effort. See `adapters/MODEL_CLASSES.md` (local override wins if present).',
       ''
     );
   }
@@ -251,7 +251,7 @@ function installCursorAwareness() {
 
 function installResolutionRule() {
   // Ships INSTALL-RESOLUTION.mdc into both Cursor and Claude rules dirs.
-  // Tells the agent: when loops-* and Hermes built-in both match, prefer loops-*.
+  // Tells the agent: when loops-* and another skill pack both match, prefer loops-*.
   const src = path.join(REPO, 'INSTALL-RESOLUTION.mdc');
   if (!fs.existsSync(src)) return [{ status: 'missing', src }];
 
@@ -689,7 +689,7 @@ function main() {
     results.push(...installClaudeSkills());
   }
 
-  // Disambiguation rule: prefer loops-* when both loops-* and Hermes built-in match.
+  // Disambiguation rule: prefer loops-* when another skill pack collides.
   results.push(...installResolutionRule());
 
   const collisions = results.filter((r) => r.status === 'skipped-collision');

@@ -4,7 +4,7 @@ Personas are **review lenses** — short role prompts the agent adopts for a ste
 
 ## Where they live
 
-Canonical files: `LOOPS_ROOT/personas/<name>.md`. Portable — no Hermes, cursor-loop, or private vault dependency.
+Canonical files: `LOOPS_ROOT/personas/<name>.md`. Portable — no external harness or private vault dependency.
 
 **Contract:** `sar` and `adversarial-gate` must **Read** the persona file before adopting that lens. Do not improvise from the name alone.
 
