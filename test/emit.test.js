@@ -209,6 +209,18 @@ describe('docs', () => {
     assert.match(gi, /MODEL_CLASSES\.local\.md/);
   });
 
+  it('recommended local example names Opus for high-reasoning', () => {
+    const ex = fs.readFileSync(path.join(REPO, 'adapters/MODEL_CLASSES.local.example.md'), 'utf8');
+    assert.match(ex, /Claude Opus 4\.8/);
+    assert.match(ex, /high-reasoning/);
+    assert.match(ex, /MODEL_CLASSES\.local\.md/);
+    assert.match(ex, /Class → model \(Claude Code\)/);
+    assert.match(ex, /Claude Sonnet 5/);
+    assert.match(ex, /Claude Haiku 4\.5/);
+    assert.doesNotMatch(ex, /\bHermes\b/);
+    assert.doesNotMatch(ex, /\bNous\b/);
+  });
+
   it('shared docs do not hardcode Fable / Hermes / Nous as defaults', () => {
     const files = [
       'adapters/MODEL_CLASSES.md',

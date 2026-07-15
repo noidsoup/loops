@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3 — 2026-07-15
+
+- **Recommended stack:** `MODEL_CLASSES.local.example.md` is now a concrete Cursor + Claude Code recipe (Opus 4.8 for high-reasoning; Cursor Auto / Claude Sonnet+Haiku for the rest; explicit bans). README points strangers at the copy step.
+
 ## 0.1.2 — 2026-07-14
 
 General-audience docs + configurable model stack:
