@@ -128,6 +128,14 @@ describe('install-global.js: link/copy primitives', () => {
       fs.mkdirSync(d);
       assert.equal(isManagedClaudeSkillDir(d, 'loops-x'), false);
     });
+    it('returns false for a symlink that points outside the repo', () => {
+      const elsewhere = path.join(tmp, 'other-pack');
+      fs.mkdirSync(elsewhere);
+      fs.writeFileSync(path.join(elsewhere, 'SKILL.md'), '---\nname: other\n---\n');
+      const link = path.join(tmp, 'loops-x-link');
+      fs.symlinkSync(elsewhere, link);
+      assert.equal(isManagedClaudeSkillDir(link, 'loops-x', path.join(tmp, 'expected-src')), false);
+    });
   });
 });
 

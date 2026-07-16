@@ -50,8 +50,27 @@ Prefix:   ${PREFIX}<name>
 `);
 }
 
+/**
+ * Path to the loops root as the user invoked it (no realpath).
+ * Needed when `project/.loops` is a symlink to another checkout — Node's
+ * `__dirname` follows the symlink, so basename(REPO) would be `loops` and
+ * emit would wrongly write into the real checkout instead of the project.
+ */
+function invokedLoopsRoot() {
+  const arg = process.argv[1];
+  if (!arg) return null;
+  const abs = path.isAbsolute(arg) ? path.normalize(arg) : path.resolve(process.cwd(), arg);
+  const adaptersDir = path.dirname(abs);
+  if (path.basename(adaptersDir) !== 'adapters') return null;
+  return path.dirname(adaptersDir);
+}
+
 /** When repo lives at project/.loops, emit into the project. */
 function resolveOutRoot() {
+  const invoked = invokedLoopsRoot();
+  if (invoked && path.basename(invoked) === '.loops') {
+    return path.dirname(invoked);
+  }
   if (path.basename(REPO) === '.loops') {
     return path.dirname(REPO);
   }
@@ -303,6 +322,7 @@ module.exports = {
   REPO,
   PREFIX,
   VALID_MODEL_CLASSES,
+  invokedLoopsRoot,
   resolveOutRoot,
   listLoopDirs,
   readLoopYaml,

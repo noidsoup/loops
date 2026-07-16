@@ -200,7 +200,7 @@ describe('emit.js: catalog discovery', () => {
     assert.deepEqual(names, sorted);
   });
 
-  it('listLoopDirs includes all 9 catalog loops', () => {
+  it('listLoopDirs includes all 10 catalog loops', () => {
     const dirs = listLoopDirs();
     const names = new Set(dirs.map(([n]) => n));
     for (const expected of [
@@ -211,6 +211,7 @@ describe('emit.js: catalog discovery', () => {
       'reproduce-and-fix',
       'migrate',
       'explain-codebase',
+      'de-ai-ify',
       'swarm',
       'use-the-loop',
     ]) {

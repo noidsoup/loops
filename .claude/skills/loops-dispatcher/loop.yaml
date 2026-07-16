@@ -27,5 +27,15 @@ classification:
   fallback: use-the-loop
   priority_keywords:
     swarm: [swarm, "swarm this", "run the swarm", "full pipeline"]
+    de-ai-ify:
+      [
+        "de-ai-ify",
+        "de-slopify",
+        "remove the slop",
+        "take the slop out",
+        "clean the slop",
+        "polish this",
+        "humanize this",
+      ]
 consumes: []
 produces: [dispatch]

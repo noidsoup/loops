@@ -46,15 +46,15 @@ You usually don’t need the workflow name. Just describe what you want.
 
 ## Which AI models to use
 
-Out of the box, Cursor mostly stays on **Auto**. That’s fine to try loops.
+Out of the box, Cursor stays on **Auto**.
 
-To use the author’s setup (stronger models for hard planning steps):
+For the recommended stack (Opus on hard planning; lighter models elsewhere):
 
 ```bash
 cp adapters/MODEL_CLASSES.local.example.md adapters/MODEL_CLASSES.local.md
 ```
 
-That file lives only on your machine. It asks for **Opus** on hard thinking steps, lighter models for everyday work. Details: [`adapters/MODEL_CLASSES.local.example.md`](adapters/MODEL_CLASSES.local.example.md). Soft defaults: [`adapters/MODEL_CLASSES.md`](adapters/MODEL_CLASSES.md).
+That creates a gitignored `MODEL_CLASSES.local.md` on your machine. Details: [`adapters/MODEL_CLASSES.local.example.md`](adapters/MODEL_CLASSES.local.example.md). Soft defaults: [`adapters/MODEL_CLASSES.md`](adapters/MODEL_CLASSES.md).
 
 ## One project only (optional)
 

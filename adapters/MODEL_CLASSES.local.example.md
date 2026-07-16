@@ -1,9 +1,8 @@
 # Model classes — recommended local override
 
-This is the **author’s recommended setup** for **Cursor** and **Claude Code**:
-specific model names for `high-reasoning` / `workhorse` / `cheap-fast`, not soft defaults.
-
-Copy it, then agents prefer this file over the portable defaults:
+Concrete Cursor + Claude Code recipe for `high-reasoning` / `workhorse` /
+`cheap-fast` (not the soft Auto defaults). Copy it; when present, agents
+**must prefer** this file over `MODEL_CLASSES.md`:
 
 ```bash
 cp adapters/MODEL_CLASSES.local.example.md adapters/MODEL_CLASSES.local.md
@@ -12,8 +11,6 @@ cp ~/.loops/adapters/MODEL_CLASSES.local.example.md ~/.loops/adapters/MODEL_CLAS
 ```
 
 `MODEL_CLASSES.local.md` is gitignored — edit freely on your machine.
-
-When this file exists, agents **must prefer it** over `MODEL_CLASSES.md`.
 
 ---
 

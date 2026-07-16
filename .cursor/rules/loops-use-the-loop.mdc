@@ -37,6 +37,7 @@ Do not invent or dispatch loops that are not listed here.
 | `reproduce-and-fix` | Bug report → minimal repro → failing test → fix → prove green. |
 | `migrate` | Version/framework upgrade with checklist and rollback. |
 | `explain-codebase` | Onboarding map of an unfamiliar repo. |
+| `de-ai-ify` | Polish code that reads as AI-generated / remove the slop. |
 | `swarm` | User asked for the full pipeline — hand off to `swarm`, don't approximate. |
 | `use-the-loop` | (you) Only as the conductor — don't recurse. |
 
@@ -47,6 +48,7 @@ User said "swarm" / full pipeline?   ─── yes ─→ load swarm (don't appr
    │
    no
    │
+"de-ai-ify" / remove the slop / humanize? → de-ai-ify
 Trivial (typo, one-liner, pure Q&A)?     → just do it (no loop)
 Bug with unclear cause / "reproduce"?   → reproduce-and-fix
 Upgrade / migrate / bump version?       → migrate

@@ -2,13 +2,13 @@
 
 ## 0.1.3 — 2026-07-15
 
-- **Recommended stack:** `MODEL_CLASSES.local.example.md` is now a concrete Cursor + Claude Code recipe (Opus 4.8 for high-reasoning; Cursor Auto / Claude Sonnet+Haiku for the rest; explicit bans). README points strangers at the copy step.
+- **Recommended stack:** `MODEL_CLASSES.local.example.md` is now a concrete Cursor + Claude Code recipe (Opus 4.8 for high-reasoning; Cursor Auto / Claude Sonnet+Haiku for the rest; explicit bans). README points at the copy step.
 
 ## 0.1.2 — 2026-07-14
 
 General-audience docs + configurable model stack:
 
-- **README:** Rewritten for strangers (why, quick start, catalog, HTTPS clone URLs).
+- **README:** Rewritten for a general audience (why, quick start, catalog, HTTPS clone URLs).
 - **Model classes:** Portable defaults in `adapters/MODEL_CLASSES.md` (Cursor Auto + Claude advisory). Personal stacks/bans live in gitignored `adapters/MODEL_CLASSES.local.md` (see `.local.example.md`). Agents prefer local when present.
 - **Scrub:** Hermes / Nous / Fable removed from shared docs and loop blurbs; pack disambiguation is skill-pack-agnostic.
 - **Install awareness:** Points at defaults + local override; lists `de-ai-ify`.

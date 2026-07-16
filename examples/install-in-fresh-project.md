@@ -56,8 +56,9 @@ The agent reads the awareness rule, runs the dispatcher, picks `plan-and-impleme
 | "reproduce this bug" | `reproduce-and-fix` |
 | "upgrade …" / "migrate …" | `migrate` |
 | "explain this codebase" | `explain-codebase` |
-| "swarm this feature" | `swarm` (full pipeline) |
-| "use the loops on this" (ambiguous) | `use-the-loop` |
+| “remove the slop” / “de-ai-ify” | `de-ai-ify` |
+| “swarm this feature” | `swarm` (full pipeline) |
+| “use the loops on this” (ambiguous) | `use-the-loop` |
 
 Claude Code: you can also invoke `/loops-dispatcher` or `/loops-plan-and-implement` directly.
 

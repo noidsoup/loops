@@ -40,7 +40,10 @@ Personas (`LOOPS_ROOT/personas/`) are review lenses inside `sar` / `adversarial-
 
 Read the user's request. Look for the strongest signal in this order:
 
-1. **High-priority explicit keywords.** "swarm" / "swarm this" / "run the swarm" / "full pipeline" → `swarm` (wins over `use-the-loop`). "use the loops" / "figure out" / "not sure" → `use-the-loop` unless swarm keywords are present. "de-ai-ify" / "de-slopify" / "remove the slop" / "take the slop out" / "clean the slop" / "polish this" / "humanize this" / "make it read like a human" / "stop sounding like ai" / "looks like ai" → `de-ai-ify`.
+1. **High-priority explicit keywords.** More specific loop keywords win over the meta phrases "use the loops" / "figure out" / "not sure". Order:
+   - "swarm" / "swarm this" / "run the swarm" / "full pipeline" → `swarm`
+   - "de-ai-ify" / "de-slopify" / "remove the slop" / "take the slop out" / "clean the slop" / "polish this" / "humanize this" / "make it read like a human" / "stop sounding like ai" / "looks like ai" → `de-ai-ify`
+   - "use the loops" / "figure out" / "not sure" → `use-the-loop` (unless a more specific keyword above is also present)
 
 2. **Explicit verb/intent words.** "build" / "implement" / "add" → `plan-and-implement`. "write tests" / "cover with tests" / "TDD" / "lock in behavior" / "test-driven" → `tdd`. "attack" / "stress-test" / "adversarial" / "find holes" / "simplest correct" → `sar`. "review PR" / "gate" / "pre-merge" → `adversarial-gate`. "reproduce" / "minimal repro" / "this is broken" / "regression" → `reproduce-and-fix`. "upgrade" / "migrate" / "bump version" → `migrate`. "explain this codebase" / "onboarding" / "map the repo" → `explain-codebase`.
 
