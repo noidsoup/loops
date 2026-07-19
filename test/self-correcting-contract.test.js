@@ -3,10 +3,12 @@
 /**
  * Self-correcting contract coverage.
  *
- * Invariants:
+ * Invariants (canonical sources only — `dispatcher/` + `loops/*` via
+ * `listLoopDirs()`; emitted `.claude/skills` / `.cursor/rules` copies are
+ * covered by `emit --check`, not this file):
  *   1. contracts/self-correcting.md exists and names the three roles.
- *   2. Every loop.yaml with self_correcting: true references the contract
- *      path in its loop.md and declares a max_revisions.
+ *   2. Every canonical loop.yaml with self_correcting: true references the
+ *      contract path in its loop.md and declares self_correcting_max_revisions.
  *   3. The adoption table in the contract matches yaml flags (spot-check
  *      known adopters / non-adopters).
  */

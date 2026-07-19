@@ -69,11 +69,14 @@ Prefer a different `model_class` or Task/subagent for Judge when the product all
 
 ## Stop conditions (Manager — hard logic)
 
-Defaults for loops that adopt this contract (override in `loop.yaml` under `self_correcting:`):
+Defaults for loops that adopt this contract. Override with flat keys in `loop.yaml`:
+
+- `self_correcting: true` — adopt this contract
+- `self_correcting_max_revisions: <int>` — hard revise ceiling (default `3`)
 
 | Control | Default | Rule |
 |---|---|---|
-| `max_revisions` | `3` | After the 3rd failed Judge verdict, **ESCALATE** — do not start a 4th automatic Builder cycle. |
+| `self_correcting_max_revisions` (Manager calls this `max_revisions`) | `3` | After the 3rd failed Judge verdict, **ESCALATE** — do not start a 4th automatic Builder cycle. |
 | Quality threshold | All Judge checklist items **PASS** | No “mostly passing” / “good enough.” |
 | Budget ceiling | Optional `max_minutes` / note cost | If the loop or host tracks spend/time and the ceiling is hit, **ESCALATE** immediately with what completed vs remains. |
 
@@ -109,4 +112,4 @@ Document how the loop passes these, or run them deliberately when changing Judge
 | `swarm` / `use-the-loop` | Meta | Nested loops must honor their stops; prefer a Judge stage before ship |
 | `dispatcher` | No | Router only |
 
-When adding a new producing loop, set `self_correcting: true` in `loop.yaml`, point `loop.md` at this file, and name Builder / Judge / Manager phases (or equivalent).
+When adding a new producing loop, set `self_correcting: true` and `self_correcting_max_revisions: 3` in `loop.yaml`, point `loop.md` at this file, and name Builder / Judge / Manager phases (or equivalent).
