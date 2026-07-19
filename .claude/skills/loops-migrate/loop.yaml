@@ -1,8 +1,11 @@
 name: migrate
-version: 0.1.1
+version: 0.2.0
 description: |
   Version or framework upgrade with inventory, checklist, rollback plan,
-  and step-by-step verification. No big-bang bumps without a safety net.
+  and step-by-step verification (max 3 thrash attempts per unexpected
+  failure). Adopts contracts/self-correcting.md.
+self_correcting: true
+self_correcting_max_revisions: 3
 phases:
   - name: inventory
     model_class: high-reasoning

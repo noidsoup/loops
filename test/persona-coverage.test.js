@@ -29,6 +29,7 @@ const LOOPS_WITH_PERSONAS = new Set([
   'plan-and-implement',
   'reproduce-and-fix',
   'migrate',
+  'de-ai-ify',
 ]);
 const LOOPS_WITHOUT_PERSONAS = new Set([
   'dispatcher',

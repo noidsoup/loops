@@ -28,5 +28,11 @@ Canonical files: `LOOPS_ROOT/personas/<name>.md`. Portable — no external harne
 |---|---|
 | `sar` | Spec as `skeptic`; attack candidates rotating `security-auditor`, `simplicity-advocate`, `perf-critic`; light simplicity bias at judge. |
 | `adversarial-gate` | Rounds default to `security-auditor` → `regression-hunter` → `edge-case-analyst`; swap in `a11y-advocate` / `api-contract-guardian` / `dx-critic` / `perf-critic` / `simplicity-advocate` when the artifact warrants it. |
+| `plan-and-implement` | Spec: `simplicity-advocate` + `dx-critic`; Judge: `regression-hunter`. |
+| `tdd` / `reproduce-and-fix` | Red/repro personas; Prove uses `regression-hunter` (light). |
+| `de-ai-ify` | Scan: `simplicity-advocate`; verify: `regression-hunter`. |
+| `migrate` | Inventory: `regression-hunter`; optional plan: `api-contract-guardian`. |
 
 Other loops may optionally adopt a persona for a single check; they do not appear in the dispatcher table.
+
+Producing loops that set `self_correcting: true` also **Read** `LOOPS_ROOT/contracts/self-correcting.md` for Builder → Judge → Manager handoffs.

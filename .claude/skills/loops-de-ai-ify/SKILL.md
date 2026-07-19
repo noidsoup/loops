@@ -1,6 +1,6 @@
 ---
 name: loops-de-ai-ify
-description: Polish code that reads as AI-generated. Identifies over-commenting, useless docstrings, defensive padding, generic names, AI-isms in prose, and other slop; proposes minimal-diff cleanups; applies them; verifies the project still passes its checks. Dog-food by running it on the...
+description: Polish code that reads as AI-generated. Identifies over-commenting, useless docstrings, defensive padding, generic names, AI-isms in prose, and other slop; proposes minimal-diff cleanups; applies them; verifies the project still passes its checks (revise up to 3 times on regre...
 ---
 # de-ai-ify
 
@@ -27,6 +27,10 @@ Phase map:
 - **apply** → `workhorse` (main session)
 - **verify** → `workhorse` (run the test/lint suite)
 - **handoff** → `cheap-fast`
+
+## Self-correcting contract
+
+**Read** `LOOPS_ROOT/contracts/self-correcting.md` before Phase 3. Roles: Scan/Spec ≈ Judge checklist; Apply = Builder; Verify = Judge with suite ground truth; Manager reverts regressions and may re-spec. `max_revisions: 3` on verify→re-spec→apply cycles for the same finding set. Empty finding list → DELIVER with nothing to do (do not manufacture slop).
 
 ## Personas (review lenses)
 
@@ -414,8 +418,9 @@ Personas first for verify, but apply first.
 1. **Run the project's verification commands.** Whatever the project uses — `pytest`, `npm test`, `cargo test`, `go test`, `make test`, language server, type checker, linter. Discover from the repo: look for `package.json` scripts, `Makefile`, `pyproject.toml`, `Cargo.toml`, `tsconfig.json`, etc.
 2. **If nothing exists**, say so and exit. Don't invent a test suite.
 3. **Capture results.** Exit code, test count, new failures vs. pre-existing.
-4. **If the cleanup introduced a failure**, that's a regression. Revert that finding's edit, mark it for re-spec, and continue with the rest. Don't ship a broken diff.
-5. **Exit when:** verification ran. Either green, or pre-existing failures are noted and any new failures are reverted.
+4. **If the cleanup introduced a failure**, that's a regression. Revert that finding's edit, mark it for re-spec, and continue with the rest. Don't ship a broken diff. Count each full verify→re-spec→apply cycle toward `max_revisions` (3); if still red after that, **ESCALATE** with the failing commands and reverted set.
+5. Emit a short **Judge verdict** (PASS if green or only pre-existing failures documented; NEEDS_REVISION if edits were reverted for re-spec; FAIL/ESCALATE at the ceiling).
+6. **Exit when:** verification ran. Either green, or pre-existing failures are noted and any new failures are reverted or escalated.
 
 ## Phase 5 — Hand off
 

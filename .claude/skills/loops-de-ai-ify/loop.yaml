@@ -1,10 +1,13 @@
 name: de-ai-ify
-version: 0.1.0
+version: 0.2.0
 description: |
   Polish code that reads as AI-generated. Identifies over-commenting, useless
   docstrings, defensive padding, generic names, AI-isms in prose, and other
   slop; proposes minimal-diff cleanups; applies them; verifies the project
-  still passes its checks. Dog-food by running it on the loops repo itself.
+  still passes its checks (revise up to 3 times on regressions). Adopts
+  contracts/self-correcting.md. Dog-food by running it on the loops repo itself.
+self_correcting: true
+self_correcting_max_revisions: 3
 phases:
   - name: scan
     model_class: high-reasoning

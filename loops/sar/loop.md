@@ -8,6 +8,18 @@ You are `sar` (Spec → Attack → Repair). The user wants the simplest correct 
 
 Skip for one-line fixes, pure Q&A, or when the user already has a single locked design and only wants a pre-merge review (`adversarial-gate`).
 
+## Self-correcting contract
+
+**Read** `LOOPS_ROOT/contracts/self-correcting.md` before Phase 2. This loop adopts Builder → Judge → Manager with `max_revisions: 3` on the repair cycle.
+
+| Role | Phase |
+|---|---|
+| Builder | Candidates + Repair |
+| Judge | Attack (per candidate) + Judge (winner) |
+| Manager | drop/keep after Attack; pick winner; stop repair thrash |
+
+Ground truth: Phase 1 acceptance checks (falsifiable). Design-only Evidence may be `n/a — design-only`.
+
 ## Model selection
 
 Resolve models from `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Prefer Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
@@ -44,15 +56,15 @@ Write a short, attackable specification (conversation-local; no required file).
 
 **Exit when:** the acceptance checks are specific enough that two honest readers would agree pass/fail.
 
-## Phase 2 — Candidates
+## Phase 2 — Candidates (Builder)
 
 Produce **2–3 distinct candidates** (approaches or implementations). Diversity matters — different structures, not paraphrases.
 
-For each candidate, briefly note: shape, trade-offs, and which acceptance checks it claims to meet. Keep each candidate short enough to attack in one pass.
+For each candidate, briefly note: shape, trade-offs, and which acceptance checks it claims to meet. Keep each candidate short enough to attack in one pass. End with a short Builder handoff per candidate (Confidence, Known uncertainties, Assumptions; Evidence may be `n/a — design-only`).
 
 **Exit when:** you have ≥2 meaningfully different candidates aligned to the same spec.
 
-## Phase 3 — Attack
+## Phase 3 — Attack (Judge)
 
 For each candidate, **Read** the matching persona file under `LOOPS_ROOT/personas/` (see table above) before attacking. Attack each candidate against the Phase 1 acceptance checks.
 
@@ -65,28 +77,31 @@ For each finding, score:
 
 Be specific. Quote the failing acceptance check. No generic "what about edge cases?"
 
-**Exit when:** every candidate has an attack log with scores.
+Treat the attack log as a Judge verdict per candidate (`NEEDS_REVISION` if Critical/open Important must-fix; `PASS` if only Nit/Pass). Manager: keep, drop, or send to Repair.
 
-## Phase 4 — Repair
+**Exit when:** every candidate has an attack log with scores and a keep/drop/repair decision.
 
-For each candidate worth keeping:
+## Phase 4 — Repair (Builder)
+
+For each candidate worth keeping. Track a **repair revision counter** (shared across candidates, default max 3 full Attack→Repair cycles for the loop).
 
 1. Fix **Critical** and decide on **Important** (fix or explicitly defer with rationale).
 2. Re-check the acceptance list after repairs.
 3. Drop a candidate if repair would require rewriting it from scratch — note why.
+4. Re-run Attack on repaired survivors. If still failing after `max_revisions`, **ESCALATE** with history — do not invent a fourth cycle.
 
-**Exit when:** surviving candidates have no open Critical findings.
+**Exit when:** surviving candidates have no open Critical findings, or escalated.
 
-## Phase 5 — Judge
+## Phase 5 — Judge (winner)
 
 **Read** `LOOPS_ROOT/personas/simplicity-advocate.md` (light pass). Pick the **simplest correct** survivor.
 
-1. Compare against acceptance checks (all must pass).
+1. Compare against acceptance checks (all must pass) — emit a final Judge verdict with `Checked against: Phase 1 acceptance checks`.
 2. Prefer fewer moving parts, clearer control flow, less surface area.
 3. Optionally merge a small idea from a loser — say so explicitly.
 4. Present the winner as the solution to implement (or the design to adopt).
 
-**Exit when:** one winner is named with a one-paragraph rationale.
+**Exit when:** one winner is named with a one-paragraph rationale, or escalated with no viable survivor.
 
 ## Phase 6 — Hand off
 
@@ -103,3 +118,4 @@ For each candidate worth keeping:
 - Skipping repair and shipping a known-broken winner.
 - Depending on any external SAR CLI or harness.
 - Writing a novel-length spec. Keep it attackable in one screen.
+- Repair thrash past `max_revisions` without escalating.

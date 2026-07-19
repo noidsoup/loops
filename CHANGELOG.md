@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.4 — 2026-07-19
+
+Self-correcting quality control across producing loops:
+
+- **Contract:** `contracts/self-correcting.md` — Builder → Judge → Manager roles, structured handoffs, ground truth, hard stops (`max_revisions: 3`), stress-test checklist.
+- **Loops:** `plan-and-implement`, `tdd`, `reproduce-and-fix`, `sar`, `adversarial-gate`, `de-ai-ify`, and `migrate` set `self_correcting: true` and wire Judge/Manager routing; meta loops honor nested escalations.
+- **Schema / docs:** `loop.schema.json` optional self-correcting fields; README + install awareness mention the contract.
+
 ## 0.1.3 — 2026-07-15
 
 - **Recommended stack:** `MODEL_CLASSES.local.example.md` is now a concrete Cursor + Claude Code recipe (Opus 4.8 for high-reasoning; Cursor Auto / Claude Sonnet+Haiku for the rest; explicit bans). README points at the copy step.

@@ -1,5 +1,5 @@
 name: use-the-loop
-version: 0.1.1
+version: 0.1.2
 description: |
   Meta conductor. Decision tree over loops that exist in this repo; may
   chain a small composition. Skips ceremony for trivial work.

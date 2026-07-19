@@ -91,9 +91,11 @@ Prefer **1–2 loops**. Three is rare. Four+ means re-scope with the user.
 
 1. **Classify** with the tree. Prefer the smallest fit.
 2. **Announce** composition + why. One beat for the user to redirect.
-3. **Load** `loops/<name>/loop.md` and follow it fully. Don't half-run.
-4. **Gate** before chaining: only proceed if the prior loop's exit condition is met.
+3. **Load** `loops/<name>/loop.md` and follow it fully. Don't half-run. Honor nested self-correcting stops (`contracts/self-correcting.md` when the child adopts it).
+4. **Gate** before chaining: only proceed if the prior loop's exit condition is met (and any Judge verdict is PASS / DELIVER, or the user accepted an escalate).
 5. **Summarize** which loops ran, what each contributed, current state, what's left.
+
+Prefer compositions that end with a Judge stage before ship (e.g. `plan-and-implement` → `adversarial-gate`, or a loop whose own Prove/Judge already PASSed).
 
 ## What you do NOT do
 

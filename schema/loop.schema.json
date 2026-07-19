@@ -37,7 +37,16 @@
     "personas": { "type": "object" },
     "classification": { "type": "object" },
     "consumes": { "type": "array" },
-    "produces": { "type": "array" }
+    "produces": { "type": "array" },
+    "self_correcting": {
+      "type": "boolean",
+      "description": "When true, agents must Read LOOPS_ROOT/contracts/self-correcting.md and follow Builder/Judge/Manager handoffs and stops."
+    },
+    "self_correcting_max_revisions": {
+      "type": "integer",
+      "minimum": 1,
+      "description": "Hard ceiling on automatic Builder←Judge revise cycles before ESCALATE. Default 3."
+    }
   },
   "additionalProperties": true
 }

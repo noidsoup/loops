@@ -1,25 +1,36 @@
 name: plan-and-implement
-version: 0.1.1
+version: 0.2.0
 description: |
   Spec-then-implement for non-trivial features, refactors, or changes.
-  Writes a short spec, gets implicit approval, implements in small verifiable
-  steps, hands off with a summary of what changed and what was verified.
+  Writes a short spec with acceptance checks, implements in small steps,
+  Judges against the spec and command output, revises up to 3 times, then
+  hands off. Adopts contracts/self-correcting.md.
+self_correcting: true
+self_correcting_max_revisions: 3
 phases:
   - name: spec
     model_class: high-reasoning
-    goal: Produce a tight specification covering goal, non-goals, user-visible behavior, constraints, approach, open questions.
-    exit_condition: Spec is on the page, ≤ one screen, has open questions called out.
+    goal: Produce a tight specification covering goal, non-goals, behavior, acceptance checks, constraints, approach, open questions.
+    exit_condition: Spec is on the page, ≤ one screen, has acceptance checks and open questions called out.
   - name: confirm
     model_class: high-reasoning
     goal: Surface the spec to the user. Resolve real ambiguities. Proceed unless interrupted.
     exit_condition: User has had a beat to react, ambiguities resolved, proceed signaled.
   - name: implement
     model_class: workhorse
-    goal: Build it in small reviewable steps, verify as you go, surface decisions.
-    exit_condition: All spec items complete, project verification commands pass.
+    goal: Build it in small reviewable steps; emit Builder handoff with evidence.
+    exit_condition: Builder handoff present (deliverable, evidence, confidence, uncertainties, assumptions).
+  - name: judge
+    model_class: high-reasoning
+    goal: Verdict against acceptance checks + command ground truth; Manager routes DELIVER / REVISE / ESCALATE.
+    exit_condition: Structured verdict emitted; next action chosen under max_revisions.
+  - name: revise
+    model_class: workhorse
+    goal: Apply Judge-specific fixes; re-verify; new Builder handoff; return to judge.
+    exit_condition: New handoff ready or escalated at max_revisions.
   - name: handoff
     model_class: cheap-fast
-    goal: Tell the user what changed, what was verified, what's left.
+    goal: Tell the user what changed, what was verified, Judge result, what's left.
     exit_condition: Handoff message sent.
 triggers:
   - "build"
@@ -29,6 +40,7 @@ triggers:
   - "refactor"
   - "let's add"
 consumes: [intent]
-produces: [code, spec, handoff]
+produces: [code, spec, judgment, handoff]
 personas:
   spec: [simplicity-advocate, dx-critic]
+  judge: regression-hunter

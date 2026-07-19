@@ -1,9 +1,11 @@
 name: sar
-version: 0.1.1
+version: 0.2.0
 description: |
   Spec → Attack → Repair. Produce candidate solutions, attack them against
-  a written spec with rotating personas, repair failures, and judge the
-  simplest correct winner.
+  a written spec with rotating personas, repair failures (max 3 cycles),
+  and judge the simplest correct winner. Adopts contracts/self-correcting.md.
+self_correcting: true
+self_correcting_max_revisions: 3
 phases:
   - name: spec
     model_class: high-reasoning

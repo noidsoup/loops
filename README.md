@@ -75,17 +75,21 @@ More detail: [`examples/install-in-fresh-project.md`](examples/install-in-fresh-
 
 | Name | For |
 |---|---|
-| `plan-and-implement` | New feature or refactor — plan first |
-| `tdd` | Change driven by tests |
-| `sar` | Spec → attack → repair |
-| `adversarial-gate` | Review before merge |
-| `reproduce-and-fix` | Bug → test → fix |
+| `plan-and-implement` | New feature or refactor — plan, build, Judge, revise |
+| `tdd` | Change driven by tests — Prove via command output |
+| `sar` | Spec → attack → repair (simplest correct) |
+| `adversarial-gate` | Review before merge (max 3 rounds) |
+| `reproduce-and-fix` | Bug → test → fix → Prove green |
 | `migrate` | Framework or version upgrade |
 | `explain-codebase` | Learn an unfamiliar repo |
 | `de-ai-ify` | Tone down AI-sounding code |
 | `swarm` | Full pipeline |
 | `use-the-loop` | Smallest mix that fits when it’s unclear |
 
+## Self-correcting quality control
+
+Producing loops adopt a shared **Builder → Judge → Manager** contract (`contracts/self-correcting.md`): structured handoffs, Judge ground truth outside the Builder’s reasoning, and a hard revise ceiling (default 3) before escalating to you. Meta loops (`swarm`, `use-the-loop`) honor nested stops and prefer ending ship chains on a Judge stage.
+
 ## License
 
-MIT · v0.1.3 · [`CHANGELOG.md`](CHANGELOG.md)
+MIT · v0.1.4 · [`CHANGELOG.md`](CHANGELOG.md)
