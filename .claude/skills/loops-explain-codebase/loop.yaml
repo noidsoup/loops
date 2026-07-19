@@ -1,5 +1,5 @@
 name: explain-codebase
-version: 0.1.1
+version: 0.1.2
 description: |
   Onboarding map for an unfamiliar repo: purpose, topology, key directories,
   runtime flows, how to run, and where to start — without dumping the tree.

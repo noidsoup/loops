@@ -1,9 +1,11 @@
 name: adversarial-gate
-version: 0.1.1
+version: 0.2.0
 description: |
   Pre-merge / PR review gate. Attack an existing artifact with rotating
-  personas, apply a fix budget, and return APPROVE, FIX REQUIRED, or BLOCK.
-  Single-model friendly.
+  personas (max 3 rounds), apply a fix budget, and return APPROVE, FIX
+  REQUIRED, or BLOCK. Adopts contracts/self-correcting.md (Judge+Manager).
+self_correcting: true
+self_correcting_max_revisions: 3
 phases:
   - name: scope
     model_class: workhorse

@@ -1,9 +1,12 @@
 name: tdd
-version: 0.1.1
+version: 0.2.0
 description: |
   Test-driven development. Write a failing test that names the desired
-  behavior, make it pass with the smallest change, then refactor under a
-  green suite.
+  behavior, make it pass with the smallest change, Prove via command
+  output + anti-cheat, revise up to 3 times, then refactor under a green
+  suite. Adopts contracts/self-correcting.md.
+self_correcting: true
+self_correcting_max_revisions: 3
 phases:
   - name: red
     model_class: high-reasoning
@@ -11,15 +14,23 @@ phases:
     exit_condition: Test run fails with a clear assertion/missing-behavior message.
   - name: green
     model_class: workhorse
-    goal: Implement the smallest honest change that makes the test pass.
-    exit_condition: New tests green; local related suite still passes.
+    goal: Implement the smallest honest change; emit Builder handoff with command evidence.
+    exit_condition: Builder handoff present with evidence of test runs.
+  - name: prove
+    model_class: high-reasoning
+    goal: Judge green against command output, anti-cheat, and scope; Manager routes.
+    exit_condition: Structured verdict; DELIVER, REVISE, or ESCALATE under max_revisions.
+  - name: revise
+    model_class: workhorse
+    goal: Fix Judge-specific issues on the green path; re-prove.
+    exit_condition: New handoff ready or escalated.
   - name: refactor
     model_class: workhorse
     goal: Clean up without changing behavior; re-run tests after cleanup.
     exit_condition: Suite still green; code is as simple as the behavior allows.
   - name: handoff
     model_class: cheap-fast
-    goal: Report what tests lock in, what was run, what's left.
+    goal: Report what tests lock in, what was run, Judge result, what's left.
     exit_condition: Handoff message sent.
 triggers:
   - "TDD"
@@ -29,6 +40,7 @@ triggers:
   - "test-driven"
   - "test-driven development"
 consumes: [intent]
-produces: [tests, code, handoff]
+produces: [tests, code, judgment, handoff]
 personas:
   red: [edge-case-analyst, regression-hunter]
+  prove: regression-hunter

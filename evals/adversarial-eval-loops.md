@@ -162,3 +162,12 @@ RULES
 Save the response to `evals/adversarial-eval-loops.response.md` and we walk through
 it together. The interesting output is Section 4 (catalog gaps) — that's the
 list of new loops to port next.
+
+## Follow-up eval (v0.1.4+)
+
+When re-running an adversarial pass after the self-correcting upgrade, also attack:
+
+- `contracts/self-correcting.md` — are Builder/Judge/Manager handoffs enforceable as prose, or theater?
+- Do producing loops with `self_correcting: true` actually separate Judge from Builder, or collapse into one breath?
+- Are `max_revisions` stops hard enough, or soft enough that agents talk past them?
+- Does `swarm` / `use-the-loop` correctly stop on nested ESCALATE?

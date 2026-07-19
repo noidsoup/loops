@@ -36,6 +36,8 @@ Below, `LOOPS_ROOT` means `.loops/` in this project (or `~/.loops` when using th
 
 Personas under `LOOPS_ROOT/personas/` are review lenses for `sar` / `adversarial-gate`, not top-level loops. Those loops **Read** `personas/<name>.md` before each persona step.
 
+Producing loops with `self_correcting: true` in `loop.yaml` must **Read** `LOOPS_ROOT/contracts/self-correcting.md` (Builder → Judge → Manager handoffs and hard stops).
+
 ## Discovery helpers (emitted, namespaced)
 
 After `node LOOPS_ROOT/adapters/emit.js` (from a `.loops/` clone, emit writes into the **project** root):

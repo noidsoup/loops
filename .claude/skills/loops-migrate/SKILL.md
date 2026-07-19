@@ -1,6 +1,6 @@
 ---
 name: loops-migrate
-description: Version or framework upgrade with inventory, checklist, rollback plan, and step-by-step verification. No big-bang bumps without a safety net.
+description: Version or framework upgrade with inventory, checklist, rollback plan, and step-by-step verification (max 3 thrash attempts per unexpected failure). Adopts contracts/self-correcting.md.
 ---
 # migrate
 
@@ -11,6 +11,10 @@ You are `migrate`. The user wants a version or framework upgrade. Your job: inve
 `dispatcher` routed here because the user said something like "upgrade", "migrate", "bump version", "move to Next 15", "Rails 8", or similar framework/dependency upgrades.
 
 Don't use for adding a brand-new dependency as part of a feature (`plan-and-implement`) or for a one-line patch version with no API risk (just do it).
+
+## Self-correcting contract
+
+**Read** `LOOPS_ROOT/contracts/self-correcting.md` before Phase 3. Checklist + verification commands = ground truth. Execute = Builder; per-step verify = Judge; go/no-go and “stop on unexpected breakage” = Manager. Cap thrash on the same failing step at `max_revisions: 3`, then **ESCALATE** or roll back — do not improvise five unplanned fixes in a row.
 
 ## Model selection
 
@@ -54,9 +58,9 @@ Write a checklist the user can skim:
 ## Phase 3 — Execute
 
 1. **One step at a time** from the checklist. Prefer official upgrade guides / codemods when they exist.
-2. **Verify after each step.** Don't stack five breaking changes before running tests.
+2. **Verify after each step.** Don't stack five breaking changes before running tests. Treat each verification as a Judge check (PASS/FAIL against that step's command).
 3. **Record deviations.** If you skip or reorder a step, say why.
-4. **Stop on unexpected breakage** that isn't in the plan — diagnose or roll back rather than thrash.
+4. **Stop on unexpected breakage** that isn't in the plan — diagnose or roll back rather than thrash. After 3 failed attempts on the same step, **ESCALATE** with evidence and the rollback ref.
 5. **Exit when:** target versions are in manifests/lockfile and planned verifications pass.
 
 ## Phase 4 — Hand off

@@ -37,7 +37,7 @@ Produce a concise map:
 5. **How to run.** Install, test, lint, start — actual commands from docs or scripts.
 6. **Conventions.** Testing style, branching, codegen, env files (no secrets).
 
-Prefer a short mermaid or bullet architecture sketch when it clarifies. Don't invent components you didn't see.
+Prefer a short mermaid or bullet architecture sketch when it clarifies. Don't invent components you didn't see. Prefer citing paths so claims are checkable (light ground truth — this loop does **not** adopt the full self-correcting contract).
 
 **Exit when:** a new contributor could find the right folder for a typical change.
 

@@ -1,10 +1,10 @@
 ---
 name: loops-reproduce-and-fix
-description: Bug workflow: minimal reproduction, failing regression test, smallest fix, prove green. No speculative fixes before the failure is reproducible.
+description: Bug workflow: minimal reproduction, failing regression test, smallest fix, Prove green via command output + anti-cheat, revise up to 3 times. No speculative fixes before the failure is reproducible. Adopts contracts/self-correcting.md.
 ---
 # reproduce-and-fix
 
-You are `reproduce-and-fix`. The user has a bug (or suspected bug). Your job: get a minimal reproduction, lock it in a failing test, fix the cause, and prove green. No speculative fixes before the failure is reproducible.
+You are `reproduce-and-fix`. The user has a bug (or suspected bug). Your job: get a minimal reproduction, lock it in a failing test, fix the cause, **Prove green with command output**, and stop cleanly if the fix cycle cannot converge. No speculative fixes before the failure is reproducible.
 
 ## When this loop runs
 
@@ -12,11 +12,23 @@ You are `reproduce-and-fix`. The user has a bug (or suspected bug). Your job: ge
 
 If the issue is already reproduced with a failing test, skip to Phase 3. If it's a feature request, not a bug, route mentally to `plan-and-implement` / `tdd` and say so.
 
+## Self-correcting contract
+
+**Read** `LOOPS_ROOT/contracts/self-correcting.md` before Phase 3. This loop adopts Builder → Judge → Manager with `max_revisions: 3` on the fix cycle.
+
+| Role | Phase |
+|---|---|
+| Builder | Fix (and Revise-fix) |
+| Judge | Prove |
+| Manager | routing after Prove |
+
+Ground truth: observed repro + failing regression test + green command output after the fix.
+
 ## Model selection
 
 Resolve models from `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Prefer Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
 
-Phase map: **reproduce** (diagnosis) → `high-reasoning` (Task/subagent when non-obvious); **failing-test / fix** → `workhorse`; **handoff** → `cheap-fast`.
+Phase map: **reproduce / prove** → `high-reasoning` (Task/subagent when non-obvious); **failing-test / fix / revise** → `workhorse`; **handoff** → `cheap-fast`.
 
 
 ## Personas (review lenses)
@@ -27,8 +39,8 @@ Personas live at `LOOPS_ROOT/personas/<name>.md`. **Before each persona step, Re
 |---|---|---|
 | Reproduce | `regression-hunter` | Is this a one-off, or one of a class? Find siblings before you fix. |
 | Failing test | `edge-case-analyst` | What other inputs share the broken path? Add them now. |
-| Fix | — | Diagnosis is already in the failing test + persona findings. |
-| Hand off | — | Mechanical. |
+| Prove | `regression-hunter` (light) | Symptom fixed for the class, not just the reported case; anti-cheat. |
+| Fix / Revise / Hand off | — | Diagnosis is already in the failing test + Judge findings. |
 
 The personas' job is to *widen* the bug class before you close it. If the fix only addresses the reported symptom, you haven't finished.
 
@@ -48,26 +60,49 @@ Personas first. **Read** `LOOPS_ROOT/personas/regression-hunter.md` before the r
 3. **Run it — they must fail** for the bug reason (assertion on wrong behavior / expected exception), not setup noise.
 4. **Exit when:** CI-local command shows red on the bug assertion and the sibling tests.
 
-## Phase 3 — Fix
+## Phase 3 — Fix (Builder)
 
 1. **Diagnose root cause** from the failing test (read the code path; don't shotgun).
 2. **Apply the smallest fix** that addresses the cause.
-3. **Run the new test — green.**
-4. **Run related suite / full suite** as the project expects.
-5. **Exit when:** regression test green and no new failures in the scope you ran.
+3. **Run the new test** and related suite / full suite as the project expects. Capture output.
+4. Emit a **Builder handoff** (Deliverable, Evidence, Confidence, Known uncertainties, Assumptions).
 
-## Phase 4 — Hand off
+**Exit when:** Builder handoff is ready for Prove.
+
+## Phase 4 — Prove (Judge + Manager)
+
+**Read** `LOOPS_ROOT/personas/regression-hunter.md` (light). Prefer a distinct high-reasoning pass when available.
+
+Per-check:
+
+1. **Repro was real** — Phase 1 observed; Phase 2 tests failed for the bug reason.
+2. **Green is real** — Evidence shows regression + siblings pass; related suite clean in scope.
+3. **Anti-cheat** — tests were not weakened solely to go green; fix addresses root cause named in handoff.
+4. **Class coverage** — siblings from Phase 2 are green, not only the single reported case.
+
+Emit a **Judge verdict**. Manager:
+
+- **PASS** → Phase 6 Hand off.
+- **NEEDS_REVISION / FAIL** → if revisions < 3, Phase 5 Revise; else **ESCALATE**.
+
+## Phase 5 — Revise-fix (Builder)
+
+Only when Manager said REVISE. Increment revision counter. Fix specific Judge issues, re-run evidence commands, new Builder handoff, return to Prove. Do not repeat identical failed feedback twice (contract: Manager memory).
+
+## Phase 6 — Hand off
 
 1. **Root cause** in one or two sentences.
 2. **Repro / test** location and command.
 3. **Fix** files touched.
 4. **Verification** commands and results.
-5. **Follow-ups** (broader cleanup, monitoring) — don't do them unless asked.
+5. **Judge result** or escalation history.
+6. **Follow-ups** (broader cleanup, monitoring) — don't do them unless asked.
 
 ## Anti-patterns (do not do these)
 
 - Fixing before you can reproduce.
 - A "regression test" that never failed.
-- Broad refactors bundled into the bugfix.
+- Broad refactors bundled into the bug fix.
 - Blaming flaky infra without isolating the product bug.
-- Declaring done without running the new test green.
+- Declaring done without running the new test green and a PASS verdict.
+- Spinning past `max_revisions` on an unsolvable or mis-scoped bug.

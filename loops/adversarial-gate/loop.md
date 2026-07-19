@@ -8,6 +8,12 @@ You are `adversarial-gate`. The user wants a pre-merge / PR review gate before s
 
 Don't use for greenfield design exploration (`sar`) or building from scratch (`plan-and-implement`). Don't use for trivial typos.
 
+## Self-correcting contract
+
+**Read** `LOOPS_ROOT/contracts/self-correcting.md` before Phase 2. This loop is Judge + Manager over an existing Builder artifact (the PR/diff). `max_revisions` maps to **maximum 3 persona rounds** (already the stop). Map gate verdicts: APPROVE → PASS/DELIVER; FIX REQUIRED → NEEDS_REVISION; BLOCK → FAIL/ESCALATE when Criticals remain.
+
+Ground truth: the actual diff + claimed intent + **commands you run** (tests/lint when available). Prefer Evidence in the verdict, not “looks fine.”
+
 ## Model selection
 
 Resolve models from `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Prefer Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
@@ -33,7 +39,7 @@ Optional swaps when the artifact warrants it:
 - Hot path / scale → `perf-critic`
 - Suspected overbuild → `simplicity-advocate`
 
-Maximum **3 rounds**. After 3 without APPROVE, escalate to the user with the full finding log — don't loop forever.
+Maximum **3 rounds**. After 3 without APPROVE, escalate to the user with the full finding log — don't loop forever. That ceiling is the Manager stop (contract `max_revisions: 3`).
 
 ## Phase 1 — Scope the artifact
 
@@ -87,7 +93,9 @@ Output:
 **Rounds:** <personas used>
 
 **Summary:** <one sentence>
-**Verified:** <commands run, if any>
+**Verified:** <commands run and key results — required when the project has a suite>
+**Ground truth:** <diff paths + intent + command output / “no suite”>
+**Manager action:** DELIVER | REVISE | ESCALATE
 ```
 
 **Exit when:** verdict matches the scores and the user can act on it in one read.

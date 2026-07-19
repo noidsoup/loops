@@ -25,7 +25,7 @@ Phase map: **classify** → `high-reasoning` (Task/subagent). **execute** stages
 
 ## Available loops (this repo only)
 
-Compose only from loops that exist here: `explain-codebase`, `plan-and-implement`, `tdd`, `sar`, `adversarial-gate`, `reproduce-and-fix`, `migrate`, `use-the-loop` (do not nest), `swarm` (do not recurse).
+Compose only from loops that exist here: `explain-codebase`, `plan-and-implement`, `tdd`, `sar`, `adversarial-gate`, `reproduce-and-fix`, `migrate`, `de-ai-ify`, `use-the-loop` (do not nest), `swarm` (do not recurse).
 
 ## Default chains (pick by task shape)
 
@@ -34,7 +34,7 @@ Announce the matching chain in one short block, then run it. Adapt lightly (skip
 ### Feature / non-trivial change — "swarm this feature"
 
 1. `explain-codebase` — **skip** if the user already gave enough context or the repo is familiar in-session.
-2. `plan-and-implement` — spec → confirm → implement.
+2. `plan-and-implement` — spec → confirm → implement → judge → revise as needed.
 3. `tdd` — **skip** if Phase 3 already drove with failing tests; otherwise lock behavior.
 4. `adversarial-gate` — pre-merge pressure on the diff.
 5. **Handoff** — what changed, what was verified, what's left.
@@ -63,10 +63,10 @@ If they only want a map: run `explain-codebase` and stop. Don't force a build pi
 
 1. **Classify** task shape (feature / bug / upgrade / explain / multi-approach).
 2. **Announce the chain** once — loop names + one clause each. User can interrupt with one line; otherwise proceed.
-3. **Load** each stage's `loops/<name>/loop.md` and run it fully. Respect that loop's exit conditions before starting the next.
-4. **Progress line** after each stage: `✓ plan-and-implement — spec implemented, tests green` then continue.
+3. **Load** each stage's `loops/<name>/loop.md` and run it fully. Respect that loop's exit conditions **and** its self-correcting stops (`max_revisions` / escalate) before starting the next. Nested loops that adopt `contracts/self-correcting.md` own their Judge/Manager — do not override a nested ESCALATE by silently continuing the swarm.
+4. **Progress line** after each stage: `✓ plan-and-implement — spec implemented, tests green, Judge PASS` then continue.
 5. **Do not re-pick** mid-pipeline. If a stage reveals the wrong shape (feature was actually a bug), stop, say so, and switch chains explicitly — don't silently drift.
-6. **Final handoff** after the last stage: chain run, artifacts, verification commands/results, residual risk.
+6. **Final handoff** after the last stage: chain run, artifacts, verification commands/results, residual risk. Prefer ending ship chains on a Judge stage (`adversarial-gate` or an implementing loop's Prove/Judge PASS).
 
 ## What you do NOT do
 

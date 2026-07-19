@@ -1,22 +1,32 @@
 ---
 name: loops-plan-and-implement
-description: Spec-then-implement for non-trivial features, refactors, or changes. Writes a short spec, gets implicit approval, implements in small verifiable steps, hands off with a summary of what changed and what was verified.
+description: Spec-then-implement for non-trivial features, refactors, or changes. Writes a short spec with acceptance checks, implements in small steps, Judges against the spec and command output, revises up to 3 times, then hands off. Adopts contracts/self-correcting.md.
 ---
 # plan-and-implement
 
-You are `plan-and-implement`. The user wants a non-trivial feature, refactor, or change built. Your job: spec it, get the user's implicit or explicit approval, then implement it cleanly. No code until the spec is solid.
+You are `plan-and-implement`. The user wants a non-trivial feature, refactor, or change built. Your job: spec it, get the user's implicit or explicit approval, implement it, **Judge it against the spec and real command output**, revise if needed under a hard stop, then hand off. No code until the spec is solid. No “done” until the Judge passes.
 
 ## When this loop runs
 
 `dispatcher` routed here because the user said something like "build X", "implement Y", "add a new Z", "I want a new feature", or the request is large enough that ad-hoc implementation would be reckless.
 
-If the request turns out to be trivial (one-line fix, one-file change with obvious answer), say so and just do it — no need to force the spec phase. Otherwise, follow the phases below in order.
+If the request turns out to be trivial (one-line fix, one-file change with obvious answer), say so and just do it — no need to force the full self-correcting ceremony. Otherwise, follow the phases below in order.
+
+## Self-correcting contract
+
+**Read** `LOOPS_ROOT/contracts/self-correcting.md` before Phase 3. This loop adopts Builder → Judge → Manager with `max_revisions: 3`.
+
+| Role | Phase |
+|---|---|
+| Builder | Implement (and Revise) |
+| Judge | Judge |
+| Manager | routing inside Judge / Revise (DELIVER / REVISE / ESCALATE) |
 
 ## Model selection
 
 Resolve models from `LOOPS_ROOT/adapters/MODEL_CLASSES.md`. If `MODEL_CLASSES.local.md` exists beside it, **that file wins**. Prefer Task/subagent for `high-reasoning` when available. Claude Code: classes are advisory.
 
-Phase map: **spec / confirm** → `high-reasoning` (Task/subagent); **implement** → `workhorse`; **handoff** → `cheap-fast`.
+Phase map: **spec / confirm / judge** → `high-reasoning` (Task/subagent); **implement / revise** → `workhorse`; **handoff** → `cheap-fast`.
 
 
 ## Personas (review lenses)
@@ -27,8 +37,8 @@ Personas live at `LOOPS_ROOT/personas/<name>.md`. **Before each persona step, Re
 |---|---|---|
 | Spec — simplicity | `simplicity-advocate` | Cut features and abstractions that don't earn their keep. |
 | Spec — developer experience | `dx-critic` | Surface friction the author is too close to see (config, errors, footguns). |
-| Implement | — | Tests + the spec are the contract. |
-| Hand off | — | Mechanical. |
+| Judge | `regression-hunter` | Did the change actually match the spec, or a related-but-different problem? |
+| Implement / Revise / Hand off | — | Spec + Judge checklist + command output are the contract. |
 
 The personas in Spec attack the *plan*, not the code. If they say "drop this, no one asked for it," drop it. If they say "this will be painful to use," redesign before writing code.
 
@@ -39,9 +49,10 @@ Personas first. **Read** `LOOPS_ROOT/personas/simplicity-advocate.md` and `LOOPS
 1. **Goal.** One sentence. What does success look like, from the user's perspective?
 2. **Non-goals.** What are you explicitly NOT building? (This is what stops scope creep.)
 3. **User-visible behavior.** How will someone interact with the result? Walk through 1-3 concrete scenarios.
-4. **Constraints.** Tech stack, dependencies, performance, security, deadline. Whatever the user has signaled.
-5. **Approach.** The shape of the solution at a high level. Files touched, libraries used, data flow. Not pseudocode — architecture.
-6. **Open questions.** Anything you'd want to confirm before starting. If the user didn't say, list your assumption.
+4. **Acceptance checks.** 3–7 falsifiable statements the Judge will PASS/FAIL later (same bar as `sar`: two honest readers would agree).
+5. **Constraints.** Tech stack, dependencies, performance, security, deadline. Whatever the user has signaled.
+6. **Approach.** The shape of the solution at a high level. Files touched, libraries used, data flow. Not pseudocode — architecture.
+7. **Open questions.** Anything you'd want to confirm before starting. If the user didn't say, list your assumption.
 
 Keep the spec short. If it's longer than a screen, you're over-specifying. A spec is a contract, not a manual.
 
@@ -51,7 +62,7 @@ Surface the spec to the user. If anything in the open questions section matters,
 
 If the spec has a real ambiguity you can't resolve by assumption (wrong-tech-stack, security-sensitive), ask one focused question. Otherwise, proceed.
 
-## Phase 3 — Implement
+## Phase 3 — Implement (Builder)
 
 Build it. Rules:
 
@@ -61,21 +72,60 @@ Build it. Rules:
 - **Verify as you go.** Run the tests, type checker, linter — whatever the project uses — after each meaningful step. Don't write 500 lines and then discover the foundation is wrong.
 - **Surface decisions.** When you make a non-obvious choice mid-implementation (chose library X over Y, dropped a feature the spec mentioned), call it out in one line.
 
-## Phase 4 — Hand off
+End the phase with a **Builder handoff** (see contract): Deliverable, Evidence (commands + results), Confidence, Known uncertainties, Assumptions made.
 
-When the work is done, give the user:
+**Exit when:** Builder handoff is present and you are ready for Judge — not when you *feel* done.
+
+## Phase 4 — Judge
+
+**Read** `LOOPS_ROOT/personas/regression-hunter.md`. Prefer a fresh high-reasoning pass / Task subagent when available so judgment is not the same breath as implementation.
+
+Check each item separately (do not collapse into vibes):
+
+1. **Spec acceptance** — every Phase 1 acceptance check PASS or FAIL with a one-line reason.
+2. **Evidence** — Builder’s claimed commands were actually run; cite key output. If the project has no suite, say so and lean harder on acceptance checks + diff-vs-intent.
+3. **Scope** — the diff addresses the stated goal, not a more interesting adjacent problem.
+4. **Honesty** — tests/assertions were not weakened solely to go green (if applicable).
+
+Emit a **Judge verdict** (PASS / FAIL / NEEDS_REVISION) per the contract, including `Ground truth used` and `Per-check` lines.
+
+**Manager routing (same phase):**
+
+- **PASS** → Action DELIVER → Phase 6 Hand off.
+- **NEEDS_REVISION or FAIL** → if revision counter < `max_revisions` (3), Action REVISE → Phase 5 with Judge issues attached. Else Action ESCALATE → stop automatic cycles; give the user full history.
+
+## Phase 5 — Revise (Builder)
+
+Only when Manager said REVISE. Increment the revision counter.
+
+1. Fix the **specific issues** from the Judge — not a vague rewrite.
+2. Re-run the relevant verification commands.
+3. Emit a new Builder handoff (include `Revision: n of 3`).
+4. Return to Phase 4 Judge.
+
+If the same Judge issue failed twice with identical feedback, change approach or ESCALATE (contract: Manager memory).
+
+**Exit when:** new handoff ready for Judge, or escalated.
+
+## Phase 6 — Hand off
+
+When Manager said DELIVER (or after ESCALATE with partial work), give the user:
 
 1. **What changed.** Files added/modified, in plain English.
 2. **What you verified.** Tests run, commands executed, output observed.
-3. **What's left.** Open questions, follow-ups, things you'd revisit with more time.
+3. **Judge result.** Verdict + per-check summary (or escalation reason + revision history).
+4. **What's left.** Open questions, follow-ups, things you'd revisit with more time.
 
-Do not declare victory without having actually run the verification. "I think this works" is not done. "I ran `pytest`, 14 passed, 1 failed in unrelated test" is done.
+Do not declare victory without a PASS verdict (or an explicit user override after escalate). "I think this works" is not done.
 
 ## Anti-patterns (do not do these)
 
 - Spec-then-implement, but the spec is just a code summary. Specs describe *what and why*, not *how*.
+- Skipping Judge because “the tests looked fine while I was building.”
+- Asking the same agent breath to both invent and certify the solution without a structured verdict.
 - Long monologues about your process. The user wants results.
 - Asking permission for every step. Move, narrate as you go.
 - Implementing in one giant blob with no checkpoints.
 - "I added tests" without actually running them.
 - Padding the spec with hedging language ("might," "perhaps," "could potentially"). State the design.
+- Looping past `max_revisions` hoping the next try will magically pass.

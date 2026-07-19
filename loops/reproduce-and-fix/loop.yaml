@@ -1,8 +1,12 @@
 name: reproduce-and-fix
-version: 0.1.1
+version: 0.2.0
 description: |
   Bug workflow: minimal reproduction, failing regression test, smallest
-  fix, prove green. No speculative fixes before the failure is reproducible.
+  fix, Prove green via command output + anti-cheat, revise up to 3 times.
+  No speculative fixes before the failure is reproducible. Adopts
+  contracts/self-correcting.md.
+self_correcting: true
+self_correcting_max_revisions: 3
 phases:
   - name: reproduce
     model_class: high-reasoning
@@ -14,11 +18,19 @@ phases:
     exit_condition: Test run is red on the bug assertion.
   - name: fix
     model_class: workhorse
-    goal: Apply the smallest root-cause fix; prove the new test green.
-    exit_condition: Regression test green; related suite clean in scope.
+    goal: Apply the smallest root-cause fix; emit Builder handoff with evidence.
+    exit_condition: Builder handoff present with command evidence.
+  - name: prove
+    model_class: high-reasoning
+    goal: Judge fix against green suite, anti-cheat, and sibling coverage; Manager routes.
+    exit_condition: Structured verdict; DELIVER, REVISE, or ESCALATE under max_revisions.
+  - name: revise
+    model_class: workhorse
+    goal: Fix Judge-specific issues; re-prove.
+    exit_condition: New handoff ready or escalated.
   - name: handoff
     model_class: cheap-fast
-    goal: Report cause, test, fix, verification, follow-ups.
+    goal: Report cause, test, fix, verification, Judge result, follow-ups.
     exit_condition: Handoff message sent.
 triggers:
   - "reproduce"
@@ -29,7 +41,8 @@ triggers:
   - "failing test for"
   - "fix this bug"
 consumes: [intent, symptom]
-produces: [repro, tests, code, handoff]
+produces: [repro, tests, code, judgment, handoff]
 personas:
   reproduce: regression-hunter
   failing-test: edge-case-analyst
+  prove: regression-hunter
