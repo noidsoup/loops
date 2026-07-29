@@ -6,3 +6,5 @@ node_modules/
 
 # Personal model stack / bans — see adapters/MODEL_CLASSES.local.example.md
 adapters/MODEL_CLASSES.local.md
+.loops
+uncommitted/

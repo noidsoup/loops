@@ -121,16 +121,44 @@ def main() -> int:
         print("--batch-size must be >= 1", flush=True)
         return 2
 
+    # nargs='*' → None when flag absent, [] when `--files` with no paths.
+    if args.files is not None and len(args.files) == 0:
+        print(
+            "ERROR: --files was passed with no paths. "
+            "Provide at least one repo-relative path for a partial update, "
+            "or omit --files entirely for a full rebuild.",
+            flush=True,
+        )
+        return 2
+    partial = args.files is not None
+
     root = repo_root()
     index_dir = default_index_dir(root)
     files = discover_indexable_files(root)
-    if args.files:
+    if partial:
         want = {p.replace("\\", "/") for p in args.files}
-        files = [p for p in files if rel_posix(p, root) in want]
-        missing = want - {rel_posix(p, root) for p in files}
-        if missing:
+        by_rel = {rel_posix(p, root): p for p in files}
+        files = []
+        not_on_disk: list[str] = []
+        for rel in sorted(want):
+            if rel in by_rel:
+                files.append(by_rel[rel])
+                continue
+            # Explicit --files may target paths outside the discovery whitelist
+            # (e.g. .cursor/plans/*.md). Include them when they exist on disk.
+            candidate = (root / rel).resolve()
+            try:
+                candidate.relative_to(root.resolve())
+            except ValueError:
+                not_on_disk.append(rel)
+                continue
+            if candidate.is_file():
+                files.append(candidate)
+            else:
+                not_on_disk.append(rel)
+        if not_on_disk:
             print("WARNING: these --files paths were not found on disk:", flush=True)
-            for m in sorted(missing):
+            for m in not_on_disk:
                 print(f"  - {m}", flush=True)
 
     if not files:
@@ -167,8 +195,45 @@ def main() -> int:
     if dim != EMBED_DIM and args.model == DEFAULT_MODEL:
         print(f"NOTE: model reports dim={dim} (expected {EMBED_DIM} for default model).", flush=True)
 
+    index_dir.mkdir(parents=True, exist_ok=True)
+    db = lancedb.connect(str(index_dir))
+    has_table = db_has_table(db, TABLE_NAME)
+    existing_meta = read_meta(index_dir)
+
+    if partial:
+        if not has_table:
+            print(
+                "ERROR: partial --files requires an existing knowledge table. "
+                "A missing table would create a shrunk index of only the requested files. "
+                "Run a full --apply without --files first.",
+                flush=True,
+            )
+            return 2
+        if not existing_meta:
+            print(
+                "ERROR: partial --files requires index_meta.json alongside the table. "
+                "Meta is missing, so the embedding model of existing rows cannot be verified. "
+                "Run a full --apply without --files to rebuild the index.",
+                flush=True,
+            )
+            return 2
+        prev_model = existing_meta.get("embedding_model")
+        prev_dim = existing_meta.get("embedding_dim")
+        prev_dim_i = int(prev_dim) if prev_dim is not None else None
+        if prev_model != args.model or (prev_dim_i is not None and prev_dim_i != dim):
+            print(
+                "ERROR: partial --files re-index cannot change embedding model/dim "
+                f"(index has model={prev_model!r} dim={prev_dim_i}; "
+                f"requested model={args.model!r} dim={dim}). "
+                "Run a full --apply without --files to rebuild the index.",
+                flush=True,
+            )
+            return 2
+
     all_texts: list[str] = []
     meta_rows: list[tuple[str, str, int]] = []
+    # Only paths we successfully read may be deleted from the index on partial update.
+    read_ok_rels: list[str] = []
     for fp in files:
         rel = rel_posix(fp, root)
         try:
@@ -176,29 +241,36 @@ def main() -> int:
         except OSError as e:
             print(f"SKIP read error {rel}: {e}", flush=True)
             continue
+        read_ok_rels.append(rel)
         parts = chunk_text(raw)
         for i, text in enumerate(parts):
             all_texts.append(text)
             meta_rows.append((chunk_id(rel, i), rel, i))
 
-    if not all_texts:
+    if not read_ok_rels:
+        print("No files readable.", flush=True)
+        return 1
+
+    if not all_texts and not partial:
         print("No chunks produced.", flush=True)
         return 1
 
-    print(f"Embedding {len(all_texts)} chunks …", flush=True)
-    t0 = time.perf_counter()
-    mat = _encode_batches(model, all_texts, args.batch_size)
-    print(f"Embedding done in {time.perf_counter() - t0:.1f}s", flush=True)
+    if all_texts:
+        print(f"Embedding {len(all_texts)} chunks …", flush=True)
+        t0 = time.perf_counter()
+        mat = _encode_batches(model, all_texts, args.batch_size)
+        print(f"Embedding done in {time.perf_counter() - t0:.1f}s", flush=True)
+    else:
+        print(
+            "No chunks to embed (readable paths were empty; clearing their indexed rows only).",
+            flush=True,
+        )
+        mat = np.zeros((0, dim), dtype=np.float32)
 
-    index_dir.mkdir(parents=True, exist_ok=True)
-    db = lancedb.connect(str(index_dir))
-
-    partial = bool(args.files)
-    rel_paths = sorted({rel_posix(p, root) for p in files})
-
-    if partial and db_has_table(db, TABLE_NAME):
+    if partial:
         table = db.open_table(TABLE_NAME)
-        pred = delete_paths_predicate(rel_paths)
+        # Delete only successfully read paths — never wipe rows when read failed.
+        pred = delete_paths_predicate(sorted(set(read_ok_rels)))
         print(f"Deleting existing rows: {pred}", flush=True)
         table.delete(pred)
         records = []
@@ -218,7 +290,10 @@ def main() -> int:
             table.add(sub)
             print(f"  appended rows {i + len(sub)}/{len(records)}", flush=True)
     else:
-        if db_has_table(db, TABLE_NAME):
+        if not all_texts:
+            print("No chunks produced.", flush=True)
+            return 1
+        if has_table:
             print(f"Dropping existing table {TABLE_NAME!r}", flush=True)
             db.drop_table(TABLE_NAME)
         records = []
