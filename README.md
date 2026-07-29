@@ -88,7 +88,11 @@ More detail: [`examples/install-in-fresh-project.md`](examples/install-in-fresh-
 
 ## Self-correcting quality control
 
-Producing loops adopt a shared **Builder → Judge → Manager** contract (`contracts/self-correcting.md`): structured handoffs, Judge ground truth outside the Builder’s reasoning, and a hard revise ceiling (default 3) before escalating to you. Meta loops (`swarm`, `use-the-loop`) honor nested stops and prefer ending ship chains on a Judge stage.
+Every building loop works in three roles: a **Builder** writes, a **Judge** checks the work against real command output (not the Builder's own claims), and a **Manager** decides to revise or ship. If it's not right after 3 rounds, it stops and asks you instead of guessing.
+
+## The companion: my-robot
+
+Loops is the **methodology**. [my-robot](https://github.com/noidsoup/my-robot) installs the whole foundation it runs on — verify gate, memory files, semantic search, an Obsidian wiki, agent rules — into any repo in one script, and symlinks loops in automatically.
 
 ## License
 
