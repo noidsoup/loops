@@ -34,6 +34,7 @@ const LOOPS_WITH_PERSONAS = new Set([
 const LOOPS_WITHOUT_PERSONAS = new Set([
   'dispatcher',
   'explain-codebase',
+  'self-improve',
   'use-the-loop',
   'swarm',
 ]);

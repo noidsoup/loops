@@ -34,6 +34,7 @@ const EXPECTED_ADOPTERS = new Set([
 
 const EXPECTED_NON_ADOPTERS = new Set([
   'explain-codebase',
+  'self-improve',
   'swarm',
   'use-the-loop',
   'dispatcher',

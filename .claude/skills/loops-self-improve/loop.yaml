@@ -1,0 +1,53 @@
+name: self-improve
+version: 0.1.0
+description: |
+  L6 conductor loop. Observe agent failures via bridge-log, inventory with
+  workflow-audit.sh, propose bounded changes via weekly-retro, apply with
+  tiered autonomy, memorize lessons, prove with verify gates. Routes to
+  existing skills — does not replace them.
+phases:
+  - name: observe
+    model_class: cheap-fast
+    goal: Confirm bridge-log kinds are used for verify_red, user_correction, rule_miss, skill_miss during the session.
+    exit_condition: Failure signals logged or none occurred.
+  - name: inventory
+    model_class: workhorse
+    goal: Run workflow-audit.sh report and failures; save report under ~/.hermes/reports/.
+    exit_condition: Audit report exists and failures TSV reviewed.
+  - name: propose
+    model_class: high-reasoning
+    goal: Load weekly-retro skill; produce ≤3 audit-cited proposals (prune, improve, evict).
+    exit_condition: Proposals presented with yes/no prompts or retro skipped with reason.
+  - name: refine
+    model_class: workhorse
+    goal: Apply approved T1/T2 changes; escalate T3 to user. Run verify on touched repos.
+    exit_condition: Approved changes applied or explicitly deferred.
+  - name: memorize
+    model_class: cheap-fast
+    goal: Append session memory, Honcho conclude for durable prefs, skill Pitfalls for procedures.
+    exit_condition: Lessons stored in correct tier (not transcript dump).
+  - name: prove
+    model_class: workhorse
+    goal: workflow-audit failures + .verify.sh + harness-lint where applicable; paste real exit codes.
+    exit_condition: Verify output pasted; failure counts noted.
+triggers:
+  - "self-improve"
+  - "self improve"
+  - "improve the agent"
+  - "improve yourself"
+  - "agent stack health"
+  - "harness health"
+  - "run weekly retro"
+  - "L6 loop"
+consumes: [audit_report, bridge_events]
+produces: [proposals, applied_changes, handoff]
+related_skills:
+  - weekly-retro
+  - autonomous-closeout
+  - closeout-learning-review
+verification:
+  discovery: |
+    workflow-audit.sh --selftest; bash .verify.sh in touched repos;
+    bash scripts/harness-lint.sh in my-robot when template/rules changed.
+  failure_handling: |
+    Do not weaken tests or assertions to go green. Tier 3 changes require explicit user approval.

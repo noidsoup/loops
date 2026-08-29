@@ -21,6 +21,7 @@ classification:
     - migrate
     - explain-codebase
     - de-ai-ify
+    - self-improve
     - swarm
     - use-the-loop
   method: llm-intent-classification
@@ -36,6 +37,16 @@ classification:
         "clean the slop",
         "polish this",
         "humanize this",
+      ]
+    self-improve:
+      [
+        "self-improve",
+        "improve the agent",
+        "improve yourself",
+        "agent stack health",
+        "harness health",
+        "run weekly retro",
+        "L6 loop",
       ]
 consumes: []
 produces: [dispatch]

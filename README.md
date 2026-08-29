@@ -40,6 +40,7 @@ cd ~/.loops && git pull && node adapters/emit.js && node adapters/install-global
 | “upgrade Next to 15” | Upgrade with a checklist |
 | “explain this codebase” | Map of the repo |
 | “remove the slop” / “de-ai-ify” | Clean up AI-sounding code |
+| “improve the agent” / “self-improve” | L6 harness health — audit, retro, apply |
 | “swarm this” | Full start-to-finish pipeline |
 
 You usually don’t need the workflow name. Just describe what you want.
@@ -83,6 +84,7 @@ More detail: [`examples/install-in-fresh-project.md`](examples/install-in-fresh-
 | `migrate` | Framework or version upgrade |
 | `explain-codebase` | Learn an unfamiliar repo |
 | `de-ai-ify` | Tone down AI-sounding code |
+| `self-improve` | L6 harness health — audit evidence, weekly retro, tiered apply |
 | `swarm` | Full pipeline |
 | `use-the-loop` | Smallest mix that fits when it’s unclear |
 
