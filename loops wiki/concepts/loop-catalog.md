@@ -2,7 +2,7 @@
 title: Loop catalog
 type: concept
 created: 2026-07-30
-updated: 2026-07-30
+updated: 2026-08-29
 tags: [loops, catalog, workflows]
 aliases: [workflows, loop-catalog]
 status: active
@@ -12,7 +12,7 @@ status: active
 
 ## Definition
 
-The ten **workflow playbooks** plus the **dispatcher** meta-router. Canonical sources: `loops/<name>/loop.md` + `loop.yaml` under `LOOPS_ROOT` (`~/.loops` or project `.loops/`).
+The eleven **workflow playbooks** plus the **dispatcher** meta-router. Canonical sources: `loops/<name>/loop.md` + `loop.yaml` under `LOOPS_ROOT` (`~/.loops` or project `.loops/`).
 
 ## Application here
 
@@ -27,6 +27,7 @@ The ten **workflow playbooks** plus the **dispatcher** meta-router. Canonical so
 | `explain-codebase` | Onboarding map of an unfamiliar repo | No |
 | `de-ai-ify` | Polish AI-sounding code; minimal-diff cleanup | Yes |
 | `swarm` | Full beginning-to-end ship pipeline (mega-loop) | Nested |
+| `self-improve` | L6 harness health: audit failures, weekly retro, tiered apply | Conductor — [[self-improve]] |
 | `use-the-loop` | Smallest composition when intent is ambiguous | Meta |
 
 **Dispatcher** (`dispatcher/loop.md`) is not in this table — it routes *to* these loops via [[loops-dispatcher]].

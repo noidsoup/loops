@@ -2,7 +2,7 @@
 title: loops dispatcher
 type: entity
 created: 2026-07-30
-updated: 2026-07-30
+updated: 2026-08-29
 tags: [dispatcher, routing, entry-point]
 aliases: [dispatcher]
 status: active
@@ -26,6 +26,7 @@ The **entry router** for loops. Canonical definition: `dispatcher/loop.md`. When
 | Signal | Routes to |
 |--------|-----------|
 | "swarm" / "full pipeline" | `swarm` |
+| "improve the agent" / "self-improve" / "harness health" / "L6 loop" | `self-improve` |
 | "de-ai-ify" / "remove the slop" | `de-ai-ify` |
 | "build" / "implement" / "add" | `plan-and-implement` |
 | "write tests" / "TDD" | `tdd` |
@@ -44,4 +45,5 @@ Emitted as `loops-dispatcher` skill/rule via [[adapters-emit-and-install-global]
 
 - [[loop-catalog]]
 - [[loop-personas]]
+- [[self-improve]]
 - [[readme-project-overview]]

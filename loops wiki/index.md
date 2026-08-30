@@ -2,7 +2,7 @@
 title: Wiki Index
 type: index
 created: 2026-07-30
-updated: 2026-07-30
+updated: 2026-08-29
 ---
 
 # Loops Wiki
@@ -27,6 +27,7 @@ updated: 2026-07-30
 | Page | What it is |
 |------|------------|
 | [[loops-dispatcher]] | Entry router: classifies intent and loads one loop. |
+| [[self-improve]] | L6 conductor loop: audit harness health, weekly retro, tiered apply. |
 | [[adapters-emit-and-install-global]] | `emit.js` + `install-global.js` — platform adapters. |
 | [[model-classes]] | `high-reasoning` / `workhorse` / `cheap-fast` model routing. |
 | [[lancedb-project-knowledge]] | Local semantic index over repo markdown and rules. |
