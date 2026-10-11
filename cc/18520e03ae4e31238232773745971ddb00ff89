@@ -1,0 +1,40 @@
+.verify.sh
+  s_06f5346c60fbca::t_e0def36ef182f7 38-40
+AGENTS.md
+  s_06f5346c60fbca::t_92803881f63487 1,3-4,6,10-12,16-24,29-33,36-38,43-56
+  s_06f5346c60fbca::t_6220c4ca7203eb 58
+.claude/CLAUDE.md
+  s_06f5346c60fbca::t_82ef3af2a4de5f 1-2
+.claude/rules/llm-wiki.md
+  s_06f5346c60fbca::t_02ba2b40bd47e3 3
+.claude/rules/project-knowledge-lancedb.md
+  s_06f5346c60fbca::t_0995aea37ad294 22
+.gitignore
+  s_06f5346c60fbca::t_7c3b363e18e9be 11-17
+"loops wiki/SCHEMA.md"
+  s_06f5346c60fbca::t_0bad765fd08afe 152
+"loops wiki/decisions/0001-python-sidecar-lancedb-retrieval.md"
+  s_06f5346c60fbca::t_eb8b8df86a3bf0 5,35
+"loops wiki/entities/lancedb-project-knowledge.md"
+  s_06f5346c60fbca::t_0a645bd4ee2478 5,27
+"loops wiki/guides/documentation-in-repo.md"
+  s_06f5346c60fbca::t_4d9c5481b3e887 5,19
+scripts/project_knowledge_lancedb_common.py
+  s_06f5346c60fbca::t_593a65d01cff1a 51,75-79
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "cc18520e03ae4e31238232773745971ddb00ff89",
+  "prompts": {},
+  "sessions": {
+    "s_06f5346c60fbca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5b71ad59-634f-4102-bcc8-fe6290effea6",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "noidsoup <noidsoup@users.noreply.github.com>"
+    }
+  }
+}
