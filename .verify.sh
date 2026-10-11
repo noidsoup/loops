@@ -35,6 +35,9 @@ run_py_tool() {  # run_py_tool <tool> <args...>
   return 127
 }
 
+# Drift check first: test/emit.test.js re-emits into the working tree, so the
+# emit --check at the end of `npm test` can never catch a stale emitted file.
+run_step "emit drift check" node adapters/emit.js --check
 run_step "npm run test" npm run test
 
 if [ "$FAILED" -eq 0 ]; then

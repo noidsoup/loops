@@ -2,7 +2,7 @@
 title: Documentation in the repo vs this wiki
 type: guide
 created: 2026-07-30
-updated: 2026-07-30
+updated: 2026-10-10
 tags: [documentation, onboarding]
 status: active
 ---
@@ -16,7 +16,7 @@ This vault (**`loops wiki/`**) holds **compiled, linked knowledge** for humans a
 | Location | Role |
 |----------|------|
 | `README.md` | Human install, catalog, companion pointer — ingested as [[readme-project-overview]] |
-| `AGENTS.md` | Always-on agent index (bootstrap stub — fill in stack and invariants) |
+| `AGENTS.md` | Always-on agent index: stack, invariants, commands (Claude Code loads it through `.claude/CLAUDE.md`) |
 | `AI_SESSION_MEMORY.md` | Dated session log — AI writes at close-out; see [[session-memory-in-wiki]] |
 | `MEMORY.md` | Rolling two-section summary (current / previous session) |
 | `docs/` | Deep docs — **markdown ingested** into `sources/`; originals **not deleted** |

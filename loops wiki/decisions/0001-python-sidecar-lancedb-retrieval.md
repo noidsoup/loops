@@ -2,7 +2,7 @@
 title: Python sidecar LanceDB for retrieval
 type: decision
 created: 2026-07-30
-updated: 2026-07-30
+updated: 2026-10-10
 tags: [adr, lancedb, retrieval]
 aliases: [0001]
 status: active
@@ -32,7 +32,7 @@ Adopt **Option A — Python sidecar** for per-repo semantic search:
 - `scripts/index_project_knowledge_lancedb.py`
 - `scripts/project_knowledge_lancedb_common.py`
 - `requirements-lancedb.txt`
-- `.cursor/rules/project-knowledge-lancedb.mdc`
+- `.claude/rules/project-knowledge-lancedb.md`
 - Index at `uncommitted/lancedb_project_knowledge/` (gitignored)
 
 Vault recall and platform memory remain valid **fallbacks** in the retrieval order but do not replace the local index on machines that run the sidecar.
