@@ -1,8 +1,7 @@
 ---
 description: LLM Wiki — read loops wiki/SCHEMA.md before any wiki operation
-globs:
+paths:
   - "loops wiki/**"
-alwaysApply: false
 ---
 
 # LLM Wiki

@@ -149,6 +149,6 @@ Orphans, dead links, index drift, stale frontmatter, thin pages — report as ch
 - **`docs/`**: Raw documentation; ingest into `sources/` + derived pages. Binaries stay in `docs/`.
 - **`AI_SESSION_MEMORY.md`**: Session breadcrumbs; wiki is compiled long-form knowledge. See [[session-memory-in-wiki]].
 - **`MEMORY.md`**: Rolling two-section summary; not duplicated in the vault unless archived.
-- **`AGENTS.md`**: Agent index at repo root (currently bootstrap stub — fill in as the project matures).
+- **`AGENTS.md`**: Agent index at repo root (stack, invariants, commands; Claude Code loads it through `.claude/CLAUDE.md`).
 - **`README.md`**: Human-facing install and catalog; ingested into [[readme-project-overview]].
 - **SimpleMem / LanceDB**: Short recall layers; wiki is structured narrative. See [[lancedb-project-knowledge]].

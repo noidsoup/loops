@@ -2,7 +2,7 @@
 title: LanceDB project knowledge search
 type: entity
 created: 2026-07-30
-updated: 2026-07-30
+updated: 2026-10-10
 tags: [lancedb, retrieval, semantic-search]
 aliases: [lancedb, project-knowledge]
 status: active
@@ -24,7 +24,7 @@ python3 -u scripts/index_project_knowledge_lancedb.py --apply
 python3 -u scripts/index_project_knowledge_lancedb.py --apply --files AGENTS.md docs/foo.md
 ```
 
-Governed by `.cursor/rules/project-knowledge-lancedb.mdc` (always applied). Optional venv: `.venv-lancedb/` + `requirements-lancedb.txt`.
+Governed by `.claude/rules/project-knowledge-lancedb.md` (always applied). Optional venv: `.venv-lancedb/` + `requirements-lancedb.txt`.
 
 ## Key details
 

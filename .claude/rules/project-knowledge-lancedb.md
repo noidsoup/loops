@@ -1,6 +1,5 @@
 ---
 description: Local LanceDB semantic search over project docs/code (offline embeddings) — search before exploring
-alwaysApply: true
 ---
 
 # Project knowledge — LanceDB (local semantic search)
@@ -20,5 +19,5 @@ Index store: `uncommitted/lancedb_project_knowledge/` (gitignored) unless `PROJE
 ## Agent responsibility
 
 1. **Search first** for repo Q&A, doc recall, "where does X live" — fall back to grep/files only if search misses.
-2. **Refresh after doc edits** — after changing indexed content (`*.md`, `docs/`, `.cursor/rules/`, etc.), re-index before close-out: targeted `--files` or full `--apply`.
+2. **Refresh after doc edits** — after changing indexed content (`*.md`, `docs/`, `.claude/rules/`, etc.), re-index before close-out: targeted `--files` or full `--apply`.
 3. A daily cron (`lancedb-reindex-daily` on the Mac) rebuilds all indexes, so staleness self-heals overnight.
