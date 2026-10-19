@@ -1,0 +1,75 @@
+.claude/rules/llm-wiki.md
+  s_3005a246dc665b::t_a19aaddfc52d80 2,4,7,9,11,13,15
+AGENTS.md
+  s_3005a246dc665b::t_9d6ce88b03cbb8 8-10,57-58
+WIKI.md
+  s_3005a246dc665b::t_620bd75e59d2e1 1,3,5-7
+wiki/SCHEMA.md
+  s_3005a246dc665b::t_26c743c4a59b01 1-11,13,15,17,19-21,23,26-36,39,43-46,49-51,55,57,59-65,69-72,74,76-80
+wiki/concepts/loop-catalog.md
+  s_3005a246dc665b::t_256f444d667f95 4,7,11
+wiki/concepts/loop-personas.md
+  s_3005a246dc665b::t_00be74896ad218 4,7,11
+wiki/concepts/self-correcting-contract.md
+  s_3005a246dc665b::t_ccec86a1420378 4,7,11
+wiki/decisions/0001-python-sidecar-lancedb-retrieval.md
+  s_3005a246dc665b::t_d56361f5fbfca5 4,7,11
+wiki/decisions/0002-namespace-emitted-files-loops-prefix.md
+  s_3005a246dc665b::t_6a2edae28d13d9 1-39
+wiki/decisions/0003-portable-model-classes-local-override.md
+  s_3005a246dc665b::t_5086868cbb12bc 1-39
+wiki/decisions/0004-builder-judge-manager-contract.md
+  s_3005a246dc665b::t_5eb60e6809742e 1-38
+wiki/decisions/0005-claude-code-entry-point-agents-md.md
+  s_3005a246dc665b::t_e15058ae35d46b 1-39
+wiki/entities/adapters-emit-and-install-global.md
+  s_3005a246dc665b::t_cd51c9cf099608 4,7,11
+wiki/entities/ci-and-verify-gate.md
+  s_3005a246dc665b::t_4e77acec61ac2a 1-37
+wiki/entities/lancedb-project-knowledge.md
+  s_3005a246dc665b::t_b0be4f6b7166e3 4,7,11
+wiki/entities/loops-dispatcher.md
+  s_3005a246dc665b::t_4a6ef13371d213 4,7,11
+wiki/entities/model-classes.md
+  s_3005a246dc665b::t_14328d9bd4c0a0 4,6-7,11,38
+wiki/entities/my-robot-companion.md
+  s_3005a246dc665b::t_83cc467cc9270d 4,6-7,11,27,33-34
+wiki/entities/self-improve.md
+  s_3005a246dc665b::t_dbadd6399c6b6b 4,7
+wiki/gotchas.md
+  s_3005a246dc665b::t_f35734f0ba0d03 1-28
+wiki/guides/documentation-in-repo.md
+  s_3005a246dc665b::t_6f53fa5cf396ac 4,6-7,10,15
+wiki/guides/global-install-and-update.md
+  s_3005a246dc665b::t_6e585ff9316fe7 4,7,10
+wiki/guides/per-project-install.md
+  s_3005a246dc665b::t_85d3d26d1b12cb 4,7,10
+wiki/index.md
+  s_3005a246dc665b::t_b41be4bc1d41ce 2-5,7-10,13,15,17-21,23,25-26,30-36,40-42,46-50,54-66
+wiki/log.md
+  s_3005a246dc665b::t_ad691f67b8a509 2-5,7-10,13,15,28-42
+wiki/memories/session-memory-in-wiki.md
+  s_3005a246dc665b::t_7933c680f32409 3-4,7,9-10,21
+wiki/overview.md
+  s_3005a246dc665b::t_d7a0f8fde65b1a 1-51
+wiki/sources/docs-ai-retrieval.md
+  s_3005a246dc665b::t_af3be55d39c31a 4,7
+wiki/sources/readme-project-overview.md
+  s_3005a246dc665b::t_49241339ee9939 4,6-7,23,55
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "747850a6b96647809d6d46193d84164d93f8723e",
+  "prompts": {},
+  "sessions": {
+    "s_3005a246dc665b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d191f050-3799-404f-88a4-d500fcf7252a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "noidsoup <noidsoup@users.noreply.github.com>"
+    }
+  }
+}
