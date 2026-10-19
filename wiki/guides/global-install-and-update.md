@@ -1,10 +1,13 @@
 ---
 title: Global install and update
 type: guide
+summary: Install loops for every project on a machine; update, uninstall, troubleshoot.
 created: 2026-07-30
 updated: 2026-07-30
+last_verified: 2026-10-19
 tags: [install, global, onboarding]
 status: active
+sources: []
 ---
 
 # Global install and update

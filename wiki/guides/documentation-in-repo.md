@@ -1,15 +1,18 @@
 ---
 title: Documentation in the repo vs this wiki
 type: guide
+summary: "Which file holds what: README, AGENTS.md, docs/, memory files, contracts, and this wiki."
 created: 2026-07-30
-updated: 2026-10-10
+updated: 2026-10-19
+last_verified: 2026-10-19
 tags: [documentation, onboarding]
 status: active
+sources: []
 ---
 
 # Documentation in the repo vs this wiki
 
-This vault (**`loops wiki/`**) holds **compiled, linked knowledge** for humans and LLMs (entities, concepts, ADRs, guides). It does not replace every markdown file at the repo root.
+This vault (**`wiki/`**) holds **compiled, linked knowledge** for humans and LLMs (entities, concepts, ADRs, guides). It does not replace every markdown file at the repo root.
 
 ## Canonical repo docs (live outside the vault)
 

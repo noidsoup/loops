@@ -1,10 +1,13 @@
 ---
 title: Session memory in the wiki
-type: guide
+type: source
+summary: Archived note on how AI_SESSION_MEMORY.md and MEMORY.md relate to the wiki.
 created: 2026-07-30
 updated: 2026-07-30
+last_verified: 2026-07-30
 tags: [memory, session, continuity]
-status: active
+status: archived
+sources: []
 ---
 
 # Session memory in the wiki
@@ -15,7 +18,7 @@ status: active
 |----------|------|
 | **`AI_SESSION_MEMORY.md`** (repo root) | **Dated session log** — AI appends at close-out. Format: shipped, decisions, state, blocked/next. Newest on top. |
 | **`MEMORY.md`** (repo root) | **Rolling summary** — two sections only (`Current session`, `Previous session`). Overwrite, don't append. |
-| **`loops wiki/`** | **Compiled long-form knowledge** — entities, concepts, ADRs, ingested sources. Updated when decisions stabilize or docs are ingested. |
+| **`wiki/`** | **Compiled long-form knowledge** — entities, concepts, ADRs, ingested sources. Updated when decisions stabilize or docs are ingested. |
 
 ## How they relate
 

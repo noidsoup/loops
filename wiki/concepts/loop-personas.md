@@ -1,11 +1,14 @@
 ---
 title: Loop personas
 type: concept
+summary: The nine review personas and which loops use them; lenses, never dispatcher options.
 created: 2026-07-30
 updated: 2026-07-30
+last_verified: 2026-10-19
 tags: [personas, review, adversarial]
 aliases: [personas]
 status: active
+sources: []
 ---
 
 # Loop personas

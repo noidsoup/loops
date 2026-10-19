@@ -1,11 +1,14 @@
 ---
 title: Loop catalog
 type: concept
+summary: The eleven workflow loops, when to use each, and which are self-correcting.
 created: 2026-07-30
 updated: 2026-08-29
+last_verified: 2026-10-19
 tags: [loops, catalog, workflows]
 aliases: [workflows, loop-catalog]
 status: active
+sources: []
 ---
 
 # Loop catalog

@@ -1,11 +1,14 @@
 ---
 title: loops dispatcher
 type: entity
+summary: "The entry router: classifies intent and loads exactly one loop."
 created: 2026-07-30
 updated: 2026-08-29
+last_verified: 2026-10-19
 tags: [dispatcher, routing, entry-point]
 aliases: [dispatcher]
 status: active
+sources: []
 ---
 
 # loops dispatcher

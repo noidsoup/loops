@@ -1,8 +1,10 @@
 ---
 title: README — project overview (ingested)
 type: source
+summary: "Digest of README.md: install paths, what to say, workflow catalog, companion repo."
 created: 2026-07-30
-updated: 2026-07-30
+updated: 2026-10-19
+last_verified: 2026-10-19
 tags: [readme, install, catalog]
 aliases: [readme]
 sources: ["README.md"]
@@ -18,7 +20,7 @@ Compiled from repo **`README.md`** (v0.1.4). Playbooks for AI coding agents in C
 - **No extra app** — install once from GitHub, then invoke from any project.
 - **Node.js 18+** required; primary commands: `node adapters/emit.js`, `node adapters/install-global.js`.
 - **Global install** recommended: clone to `~/Code/loops`, emit, install-global → `~/.loops` symlink + `loops-*` skills/rules.
-- **Ten workflows** plus dispatcher; users describe intent ("write tests for…") rather than naming loops.
+- **Eleven workflows** plus dispatcher (`self-improve` joined on 2026-08-29, commit `adf9b47`); users describe intent ("write tests for…") rather than naming loops.
 - **Self-correcting QC** — Builder → Judge → Manager on producing loops (see [[self-correcting-contract]]).
 - **Companion:** [my-robot](https://github.com/noidsoup/my-robot) bootstraps verify gate, memory, wiki, and symlinks loops (see [[my-robot-companion]]).
 
@@ -50,6 +52,7 @@ Uninstall: `node adapters/install-global.js --uninstall`
 | "upgrade Next to 15" | `migrate` |
 | "explain this codebase" | `explain-codebase` |
 | "remove the slop" / "de-ai-ify" | `de-ai-ify` |
+| "improve the agent" / "self-improve" | `self-improve` |
 | "swarm this" | `swarm` |
 
 ### Model stack

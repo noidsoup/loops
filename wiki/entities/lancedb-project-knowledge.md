@@ -1,11 +1,14 @@
 ---
 title: LanceDB project knowledge search
 type: entity
+summary: Offline LanceDB index over repo markdown; how agents search and re-index it.
 created: 2026-07-30
 updated: 2026-10-10
+last_verified: 2026-10-10
 tags: [lancedb, retrieval, semantic-search]
 aliases: [lancedb, project-knowledge]
 status: active
+sources: []
 ---
 
 # LanceDB project knowledge search

@@ -1,11 +1,14 @@
 ---
 title: adapters emit and install-global
 type: entity
+summary: emit.js turns canonical loops into loops-* rules and skills; install-global.js links them into ~/.
 created: 2026-07-30
 updated: 2026-07-30
+last_verified: 2026-10-19
 tags: [emit, install, node, adapters]
 aliases: [emit, install-global]
 status: active
+sources: []
 ---
 
 # adapters emit and install-global

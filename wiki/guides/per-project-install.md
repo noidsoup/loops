@@ -1,10 +1,13 @@
 ---
 title: Per-project install (.loops/)
 type: guide
+summary: Clone loops as .loops/ inside one project to pin a version for teammates.
 created: 2026-07-30
 updated: 2026-07-30
+last_verified: 2026-07-30
 tags: [install, per-project, teammates]
 status: active
+sources: []
 ---
 
 # Per-project install (.loops/)

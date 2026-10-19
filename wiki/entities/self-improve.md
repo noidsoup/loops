@@ -1,8 +1,10 @@
 ---
 title: self-improve loop
 type: entity
+summary: "The L6 harness-health conductor loop: observe, inventory, propose, tiered apply, prove."
 created: 2026-08-29
 updated: 2026-08-29
+last_verified: 2026-08-29
 tags: [loops, self-improve, harness-health, conductor, L6]
 aliases: [self-improve, self-improve-loop, L6]
 sources: ["[[readme-project-overview]]"]

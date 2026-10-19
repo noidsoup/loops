@@ -1,8 +1,10 @@
 ---
 title: docs/ai-retrieval.md (ingested)
 type: source
+summary: "Digest of docs/ai-retrieval.md: sidecar vs vault recall vs platform retrieval."
 created: 2026-07-30
 updated: 2026-07-30
+last_verified: 2026-07-30
 tags: [retrieval, lancedb, docs]
 aliases: [ai-retrieval]
 sources: ["docs/ai-retrieval.md"]

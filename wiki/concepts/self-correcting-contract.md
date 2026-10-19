@@ -1,11 +1,14 @@
 ---
 title: Self-correcting contract
 type: concept
+summary: Builder, Judge, Manager roles with outside ground truth and a 3-revision hard stop.
 created: 2026-07-30
 updated: 2026-07-30
+last_verified: 2026-10-19
 tags: [quality, builder-judge-manager, contract]
 aliases: [self-correcting, BJM]
 status: active
+sources: []
 ---
 
 # Self-correcting contract

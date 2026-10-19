@@ -5,6 +5,9 @@
 
 Claude Code loads this file through `.claude/CLAUDE.md`; always-on rules are in `.claude/rules/`.
 
+**Project wiki:** read `wiki/index.md` before non-trivial work; open pages it points to only when relevant.
+After a repeated failure, check `wiki/gotchas.md`. Writing to the wiki: follow `wiki/SCHEMA.md`.
+
 ## Retrieval order (read before acting)
 
 Governed by `.claude/rules/pre-task-retrieval.md`. Cheapest-first:
@@ -51,8 +54,8 @@ always passes. `npm run verify` checks drift first; run `git status` after tests
 | Awareness rules the installs copy (global and per-project) | `INSTALL.mdc`, `INSTALL-GLOBAL.mdc`, `INSTALL-CLAUDE.md`, `INSTALL-RESOLUTION.mdc` |
 | Per-project install walkthrough | `examples/install-in-fresh-project.md` |
 | Design-review prompt for the catalog | `evals/adversarial-eval-loops.md` |
-| LanceDB sidecar (why and how) | `docs/ai-retrieval.md`, `loops wiki/decisions/0001-python-sidecar-lancedb-retrieval.md` |
-| Wiki (Obsidian vault) | `loops wiki/` — read `loops wiki/SCHEMA.md` first |
+| LanceDB sidecar (why and how) | `docs/ai-retrieval.md`, `wiki/decisions/0001-python-sidecar-lancedb-retrieval.md` |
+| Project wiki (history, decisions, gotchas) | `wiki/index.md`; write rules in `wiki/SCHEMA.md` |
 | Release history | `CHANGELOG.md` |
 | Recent decisions | `AI_SESSION_MEMORY.md` |
 | Not part of loops | `scripts/yin-*`, `scripts/LlamaServerQwythos-patched.xml` (llama.cpp server setup for a separate Windows box) |

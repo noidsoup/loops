@@ -1,11 +1,14 @@
 ---
 title: Python sidecar LanceDB for retrieval
 type: decision
+summary: Per-repo semantic search runs as a Python LanceDB sidecar, not inside the Node tooling.
 created: 2026-07-30
 updated: 2026-10-10
+last_verified: 2026-10-19
 tags: [adr, lancedb, retrieval]
 aliases: [0001]
 status: active
+sources: []
 ---
 
 # Python sidecar LanceDB for retrieval
