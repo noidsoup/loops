@@ -8,6 +8,17 @@ Claude Code loads this file through `.claude/CLAUDE.md`; always-on rules are in 
 **Project wiki:** read `wiki/index.md` before non-trivial work; open pages it points to only when relevant.
 After a repeated failure, check `wiki/gotchas.md`. Writing to the wiki: follow `wiki/SCHEMA.md`.
 
+## Working rules
+
+1. **Think before coding.** State assumptions, surface tradeoffs, ask before guessing.
+2. **Simplicity first.** Minimum code that solves the problem; no speculative abstractions.
+3. **Surgical changes.** Touch only what the task needs. Match the existing style.
+4. **Read before you write.** Read the file's exports and its caller before adding to it.
+5. **Fail loud.** If you can't be sure it worked, say so. Never report skipped work as done.
+6. **Check after every change.** Run the type check / lint from "Commands" after each edit.
+7. **Behavior changes ship with tests**, where a test runner exists (see "What can be verified").
+8. **Never ratchet a test to match current output.** Find why it changed; decide whether the code or the test is wrong.
+
 ## Retrieval order (read before acting)
 
 Governed by `.claude/rules/pre-task-retrieval.md`. Cheapest-first:
@@ -25,6 +36,44 @@ Governed by `.claude/rules/pre-task-retrieval.md`. Cheapest-first:
 7. **`adapters/install-global.js` writes outside the repo** (`~/.loops`, `~/.cursor/rules`, `~/.cursor/skills`, `~/.claude/rules`, `~/.claude/skills`). Run `npm run install:global` only when asked; preview with `npm run install:global:dry`.
 8. **This checkout may be live.** If `readlink ~/.loops` points here, agents in every project on the machine read this checkout's loop files, so a half-finished branch changes their behavior too.
 9. **Secrets only in `.env`** (gitignored). Building and testing need none; `.env.example` lists only the optional LanceDB settings.
+
+## Commands (tested)
+
+Runtime: Node 22 (pinned in `.nvmrc`; `engines` says >=18, CI runs Node 20). No npm dependencies, so no install step. LanceDB sidecar: `.venv-lancedb/` (Python, gitignored, exists in `~/Code/loops` only). · Last verified: 2026-10-22 (worktree on `main` 747850a)
+
+| Task | Command (run from) | Notes |
+| ---- | ------------------ | ----- |
+| Install | none | `package.json` has no dependencies. |
+| Verify gate | `npm run verify` (root) | Exit 0: emit drift check OK, then `npm test`. |
+| Test | `npm test` (root) | Exit 0: 151 tests, 151 pass, ~0.7s, then emit `--check` OK. What CI runs. |
+| Emit drift check | `npm run emit:check` (root) | Exit 0, no drift. |
+| Global install preview | `npm run install:global:dry` (root) | Exit 0, changes nothing. Shows the plan is to point `~/.loops` at **the checkout you run it from** (see gotchas). |
+| Retrieval | `env -u PYTHONPATH -u VIRTUAL_ENV .venv-lancedb/bin/python -u scripts/search_project_knowledge_lancedb.py "<q>" --top-k 8` (`~/Code/loops`) | Exit 0, 3 hits. Worktrees have no `.venv-lancedb`. |
+| Emit | `npm run emit` | Not run 2026-10-22 (it rewrites `.cursor/rules` + `.claude/skills`; nothing to regenerate). |
+
+## Known baseline
+
+None: clean. Verify, tests and emit check all pass on `main` (747850a) as of 2026-10-22.
+
+## What can be verified
+
+- `node --test`: schema of every `loop.yaml`, dispatcher coverage, persona coverage, the self-correcting contract, banned private names in shared docs, emit and install-global units, and emitted-file drift.
+- **Not checked:** whether a loop's prose actually steers an agent well. That needs a real run (e.g. `evals/adversarial-eval-loops.md`). `scripts/yin-*` (separate Windows box) are not tested.
+
+## Running locally and logging in
+
+Nothing to sign in to and no server. "Running" a loop means an agent reading it: `~/.loops` → `~/Code/loops`, so the main checkout's branch is what every project on this machine reads.
+
+## Dev vs production gotchas
+
+- **The main checkout is production.** `readlink ~/.loops` = `/Users/thedao/Code/loops` (2026-10-22). Edit on a branch in a worktree, not in `~/Code/loops`.
+- **`install-global.js` links `~/.loops` to whichever checkout runs it.** `npm run install:global` from a worktree would re-point every project at that worktree (the dry run prints `would symlink ~/.loops → <worktree>`). Run the real install only from `~/Code/loops`, and only when asked.
+
+## Git and push safety
+
+- Owner: personal (`noidsoup/loops`, MIT). Default branch: `main`. Work on a branch; never commit to `main`.
+- Push policy: push to origin only with Nicholas's OK.
+- Root `CLAUDE.md` is machine-only (`.git/info/exclude`; Origin rewrites it). The tracked entry point is `.claude/CLAUDE.md`. Commit with `git -c core.hooksPath=.git/hooks commit` to skip Origin's global hooks.
 
 ## Definition of done (commands)
 
